@@ -1,0 +1,81 @@
+{
+  "extends": [
+    "airbnb"
+  ],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "jsdoc",
+    "sort-class-members",
+    "check-file"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "camelcase": "error",
+
+    "indent": [
+      "error",
+      2
+    ],
+
+    "curly": [
+      "error",
+      "all"
+    ],
+
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
+
+    "keyword-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ],
+
+    "space-before-blocks": "error",
+
+    "react/jsx-pascal-case": "error",
+
+    "react/prop-types": "error",
+
+    "react/destructuring-assignment": [
+      "error",
+      "always"
+    ],
+
+    "react-hooks/rules-of-hooks": "error",
+
+    "react-hooks/exhaustive-deps": "warn",
+
+    "jsdoc/require-jsdoc": "error",
+
+    "sort-class-members/sort-class-members": "error",
+
+    "check-file/filename-naming-convention": [
+      "error",
+      {
+        "**/components/**/*.jsx": "PASCAL_CASE",
+        "**/hooks/**/*.js": "CAMEL_CASE",
+        "**/*.routes.js": "KEBAB_CASE",
+        "**/*.controller.js": "KEBAB_CASE"
+      }
+    ]
+  }
+}
