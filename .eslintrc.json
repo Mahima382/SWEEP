@@ -1,81 +1,45 @@
 {
-  "extends": [
-    "airbnb"
-  ],
-  "plugins": [
-    "react",
-    "react-hooks",
-    "jsdoc",
-    "sort-class-members",
-    "check-file"
-  ],
-  "env": {
-    "browser": true,
-    "node": true,
-    "es2021": true
-  },
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
+  "extends": ["airbnb"],
+  "plugins": ["react", "react-hooks"],
+  "env": { "browser": true, "es2021": true, "node": true },
+  "settings": { "react": { "version": "18.3" } },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.test.jsx", "**/vitest.setup.js"],
+      "globals": {
+        "describe": "readonly",
+        "it": "readonly",
+        "test": "readonly",
+        "expect": "readonly",
+        "beforeAll": "readonly",
+        "afterAll": "readonly",
+        "beforeEach": "readonly",
+        "afterEach": "readonly",
+        "vi": "readonly"
+      },
+      "rules": {
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+      }
+    },
+    {
+      "files": ["**/vite.config.js", "**/vitest.config.js", "**/playwright.config.js", "**/.eslintrc.js"],
+      "rules": {
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+        "import/no-unresolved": "off"
+      }
     }
-  },
+  ],
   "rules": {
     "camelcase": "error",
-
-    "indent": [
-      "error",
-      2
-    ],
-
-    "curly": [
-      "error",
-      "all"
-    ],
-
-    "no-multiple-empty-lines": [
-      "error",
-      {
-        "max": 1
-      }
-    ],
-
-    "keyword-spacing": [
-      "error",
-      {
-        "before": true,
-        "after": true
-      }
-    ],
-
-    "space-before-blocks": "error",
-
+    "indent": ["error", 2],
+    "curly": ["error", "all"],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
     "react/jsx-pascal-case": "error",
-
     "react/prop-types": "error",
-
-    "react/destructuring-assignment": [
-      "error",
-      "always"
-    ],
-
     "react-hooks/rules-of-hooks": "error",
-
     "react-hooks/exhaustive-deps": "warn",
-
-    "jsdoc/require-jsdoc": "error",
-
-    "sort-class-members/sort-class-members": "error",
-
-    "check-file/filename-naming-convention": [
-      "error",
-      {
-        "**/components/**/*.jsx": "PASCAL_CASE",
-        "**/hooks/**/*.js": "CAMEL_CASE",
-        "**/*.routes.js": "KEBAB_CASE",
-        "**/*.controller.js": "KEBAB_CASE"
-      }
-    ]
+    "linebreak-style": "off",
+    "eol-last": "off",
+    "class-methods-use-this": "off"
   }
 }

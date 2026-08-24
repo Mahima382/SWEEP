@@ -1,11 +1,14 @@
 {
   "source": {
-    "include": [
-      "./backend/src"
+    "include": ["frontend/src", "backend"],
+    "exclude": [
+      "node_modules",
+      "backend/node_modules",
+      "frontend/node_modules",
+      "frontend/dist",
+      "docs"
     ],
-    "includePattern": ".+\\.js$"
+    "includePattern": ".+\\.js(x)?$"
   },
-  "opts": {
-    "destination": "./docs"
-  }
+  "opts": { "destination": "./docs", "recurse": true }
 }

@@ -1,0 +1,5 @@
+-- SWEEP MySQL schema — TBD.
+-- Data stores from the agreed DFD: D1 Users, D2 Listings, D3 Pickups,
+-- D4 Orders, D5 Wallets, D6 Audit Logs, D7 Transactions.
+-- Design the tables from FR-01..FR-12 in CLAUDE.md §5 before writing DDL here.
+-- Note: no bidding/escrow tables — both are out of scope (locked decision).
