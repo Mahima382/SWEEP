@@ -23,8 +23,8 @@
 
 | Name | Roll |
 |------|------|
-| Md. Safiur Khan Siam | 356 |
-| Yeaseen Arafat Hridit | 361 |
+| Md. Shafiur Khan Siam | 356 |
+| Yaseen Arafat Hridit | 361 |
 | Abid Hasan Plabon | 369 |
 | Anabil Chakma | 378 |
 | Zakia Sultana Mahima | 382 |
@@ -67,9 +67,9 @@ These are settled. Do not reopen without an explicit instruction.
 | 2 | **Collector split into two roles** | Local Collector (household → collector) and Global Collector (collector → company, truck driver). |
 | 3 | **Bidding / auctions: REMOVED** | Out of scope. Fixed-price orders only. Any legacy FR text mentioning bids is stale. |
 | 4 | **Escrow: REMOVED** | Out of scope. Payment FR is retained but without escrow hold/release mechanics. |
-| 5 | **Testing: Jest (unit) + Supertest (integration)** | Decided in Meeting 4. React Testing Library for components. |
+| 5 | **Testing: Vitest (unit) + Supertest (integration) + Playwright (E2E)** | Originally Jest (Meeting 4); switched to Vitest 2026-08-24 — same role, runs on the Vite pipeline already used for the frontend. React Testing Library for components. Playwright added 2026-08-24 in its own `e2e/` tree. |
 | 6 | **Coding standard: ESLint + Airbnb** | See §7. |
-| 7 | **Documentation tool: JSDoc** | Tool 1. Jest documented as Tool 2. |
+| 7 | **Documentation tool: JSDoc** | Tool 1. Jest was documented as Tool 2 (wiki page + setup PDF, Task 6.1 already submitted) — now stale since the Jest→Vitest switch; needs manual reconciliation, see §11. |
 | 8 | **12 Functional Requirements** | Restructured from an earlier 7-FR draft. See §5. |
 
 ---
@@ -83,18 +83,25 @@ Database    MySQL (via mysql2)              → the Model layer
 Auth        bcryptjs + jsonwebtoken
 Lint        ESLint 8.57.1 + eslint-config-airbnb
 Docs        JSDoc 4.0.5
-Test        Jest + Supertest + React Testing Library
+Test        Vitest + Supertest + React Testing Library + Playwright (E2E)
 Payments    bKash / Nagad / bank transfer
 Maps        Google Maps Platform
 ```
 
-### Package layout (three npm trees — deliberate, reduces lockfile merge conflicts)
+### Package layout (four npm trees — deliberate, reduces lockfile merge conflicts)
 
 | Tree | Package | Key deps (installed 2026-08-24) |
 |------|---------|--------------------------------|
 | root | `sweep` | dev: eslint@8.57.1, eslint-config-airbnb@19 + peers, jsdoc@4 |
-| `backend/` | `sweep-backend` | express, mysql2, dotenv@16, cors, bcryptjs, jsonwebtoken · dev: nodemon, jest, supertest |
-| `frontend/` | `sweep-frontend` | react@18.3, react-dom@18.3, react-router-dom@6, prop-types · dev: vite@5, @vitejs/plugin-react, jest@29 + jsdom env, @testing-library/react@14 (v16 needs React 19 — don't upgrade), babel-jest + presets, identity-obj-proxy |
+| `backend/` | `sweep-backend` | express, mysql2, dotenv@16, cors, bcryptjs, jsonwebtoken · dev: nodemon, vitest@2, supertest |
+| `frontend/` | `sweep-frontend` | react@18.3, react-dom@18.3, react-router-dom@6, prop-types · dev: vite@5, @vitejs/plugin-react, vitest@2 + jsdom, @testing-library/react@14 (v16 needs React 19 — don't upgrade), @testing-library/jest-dom |
+| `e2e/` | `sweep-e2e` | dev: @playwright/test@1.49 (chromium binary installed via `npx playwright install chromium`, not npm) |
+
+> **Why `e2e/` is a separate tree, not inside `frontend/`:** Playwright E2E specs drive both
+> the frontend and the backend together (real browser hitting the real Express API), so they
+> don't belong to either layer alone — same "reduce lockfile conflicts" rationale as the
+> other three trees. `e2e/playwright.config.js` boots both dev servers itself via `webServer`
+> entries that shell out to the root `dev:backend`/`dev:frontend` scripts.
 
 > **Resolved issue (2026-08-24):** the "server clean-exits after boot" bug was `dotenv`
 > v17 (dotenvx) + an empty `.env`. Now pinned to `dotenv@16` with a populated
@@ -175,16 +182,27 @@ ESLint with `eslint-config-airbnb`. Config at repo root.
   "settings": { "react": { "version": "18.3" } },
   "overrides": [
     {
-      "files": ["**/*.test.js", "**/*.test.jsx", "**/jest.setup.js"],
-      "env": { "jest": true },
+      "files": ["**/*.test.js", "**/*.test.jsx", "**/vitest.setup.js"],
+      "globals": {
+        "describe": "readonly",
+        "it": "readonly",
+        "test": "readonly",
+        "expect": "readonly",
+        "beforeAll": "readonly",
+        "afterAll": "readonly",
+        "beforeEach": "readonly",
+        "afterEach": "readonly",
+        "vi": "readonly"
+      },
       "rules": {
         "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
       }
     },
     {
-      "files": ["**/vite.config.js", "**/jest.config.js", "**/.eslintrc.js"],
+      "files": ["**/vite.config.js", "**/vitest.config.js", "**/.eslintrc.js"],
       "rules": {
-        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+        "import/no-unresolved": "off"
       }
     }
   ],
@@ -205,9 +223,12 @@ ESLint with `eslint-config-airbnb`. Config at repo root.
 ```
 
 **Why `settings`/`overrides` were added (2026-08-24):** `react.version` silences the
-detect warning (react lives in `frontend/`, not root); the overrides give Jest globals
-to `*.test.js(x)` files and allow devDependency imports in test/config files — the
-locked rules themselves are unchanged.
+detect warning (react lives in `frontend/`, not root); the overrides give Vitest globals
+(`describe`/`it`/`expect`/`vi`/etc. — no built-in ESLint "vitest" env exists, so these are
+declared explicitly) to `*.test.js(x)` files, allow devDependency imports in test/config
+files, and turn off `import/no-unresolved` for `vite.config.js`/`vitest.config.js` (the
+`resolve` package eslint-plugin-import uses doesn't fully resolve `vitest/config`'s
+conditional export map) — the locked rules themselves are unchanged.
 **Why `linebreak-style` and `eol-last` are off:** Windows dev machines produce CRLF.
 **Why `class-methods-use-this` is off:** pure math/utility class methods legitimately
 don't reference `this`.
@@ -274,7 +295,12 @@ SWEEP/
 ├── .eslintrc.json
 ├── .eslintignore
 ├── jsdoc.json
-├── package.json                   ← root tooling only; backend/ and frontend/ have their own
+├── e2e/                            ← Playwright E2E specs (own npm tree)
+│   ├── tests/
+│   │   └── smoke.spec.js
+│   ├── playwright.config.js
+│   └── package.json
+├── package.json                   ← root tooling only; backend/, frontend/, e2e/ have their own
 ├── README.md
 ├── CONTRIBUTING.md                ← branch model + module ownership map
 └── .gitignore
@@ -285,8 +311,9 @@ SWEEP/
 ## 9. Commands
 
 ```bash
-# Install (three trees)
-npm install && npm install --prefix backend && npm install --prefix frontend
+# Install (four trees)
+npm install && npm install --prefix backend && npm install --prefix frontend && npm install --prefix e2e
+npx --prefix e2e playwright install chromium   # one-time browser binary download, not npm-managed
 
 # Lint (root config covers the whole repo)
 npm run lint                              # eslint . --ext .js,.jsx
@@ -297,13 +324,14 @@ npx eslint backend/app.js                 # single file
 npm run docs                              # jsdoc -c jsdoc.json → docs/index.html (gitignored)
 
 # Tests
-npm test                                  # backend suite (Jest+Supertest) then frontend (Jest+RTL)
+npm test                                  # backend suite (Vitest+Supertest) then frontend (Vitest+RTL)
 npm --prefix backend test                 # backend only
 npm --prefix frontend test               # frontend only
+npm run test:e2e                          # Playwright — boots real dev servers, drives Chromium
 
 # Run
 npm run dev:backend                       # nodemon backend/server.js → port 5000 (GET /health)
-npm run dev:frontend                      # vite → port 5173, proxies /api → :5000
+npm run dev:frontend                      # vite → port 3000, proxies /api → :5000
 npm --prefix frontend run build           # production build → frontend/dist (gitignored)
 ```
 
@@ -383,11 +411,20 @@ Diagrams are drawn in Lucidchart.
   `authenticate`/`authorize` middleware, central error handler, lazy mysql2 pool,
   `utils/constants.js` (8 waste categories), `database/schema.sql` header,
   `.env` + `.env.example`. **Boot bug fixed** (dotenv@16 + populated .env — server stays
-  up, `/health` verified live). Jest+Supertest: **3/3 passing**
+  up, `/health` verified live). Vitest+Supertest: **3/3 passing**
 - **Frontend scaffold (`sweep-frontend`):** Vite + React 18.3 (manual scaffold, React 18
   pinned), router table in `routes/AppRoutes.jsx`, AuthContext + useAuth, services/api.js
   fetch wrapper (+/api proxy to :5000), per-role component folders each with a starter
-  dashboard, pages/layouts/utils/styles. `npm run build` ✅, Jest+RTL smoke test **1/1**
+  dashboard, pages/layouts/utils/styles. `npm run build` ✅, Vitest+RTL smoke test **1/1**
+- **Test runner switch (2026-08-24, later same day):** Jest → Vitest across both
+  `backend/` and `frontend/` (Babel/`babel-jest`/`jest-environment-jsdom`/
+  `identity-obj-proxy` removed — Vitest reuses the existing Vite pipeline directly).
+  Supertest unchanged for backend integration tests. `npm run lint` still 0
+  errors/warnings, both suites still passing after the switch.
+- **Playwright E2E added (2026-08-24, same day):** new `e2e/` npm tree (`sweep-e2e`),
+  `@playwright/test@1.49` + chromium binary installed, `playwright.config.js` boots the
+  real backend + frontend via `webServer` and points chromium at `localhost:3000`.
+  `npm run test:e2e` → 1/1 passing (verified against the real dev servers, not mocked).
 - **Docs:** `npm run docs` generates cleanly (0 parse errors); `docs/` gitignored
 - **Team docs:** `CONTRIBUTING.md` (branch model, 6-member FR ownership map, shared-files
   protocol) and `README.md` (project intro + run instructions)
@@ -401,6 +438,12 @@ Diagrams are drawn in Lucidchart.
 - [ ] Wiki pages to publish: Coding Standard, MVC vs MVVM, Jest (Documentation Tool 2)
 - [ ] SRS: paste generated LaTeX for FR / NFR / Section 2 into Overleaf
 - [ ] Purge remaining bidding/escrow references from SRS and DFD Level 2
+- [ ] **Reconcile Jest→Vitest switch with already-submitted coursework**: `Jest_Setup_Procedure.pdf`,
+      `Sweep_Wiki_Jest_Documentation_Tool.md`, and Task 6.1 all name Jest as "Documentation Tool 2" —
+      decide whether to redo that deliverable around Vitest or keep Jest as the documented tool
+      even though the codebase now runs Vitest
+- [ ] Write more E2E specs beyond the one home-page smoke test in `e2e/tests/smoke.spec.js`
+      (registration/login flows once FR-01/FR-02 are real, not 501s)
 
 ---
 
@@ -413,7 +456,7 @@ Diagrams are drawn in Lucidchart.
    is the bar (`server.js` suppresses its one boot log with a targeted
    `eslint-disable-next-line no-console`).
 4. **JSDoc every new class, constructor, and exported function.** `@param` + `@returns`.
-5. **Write the Jest test alongside the source file** (`foo.js` → `foo.test.js`).
+5. **Write the Vitest test alongside the source file** (`foo.js` → `foo.test.js`).
 6. **Don't reintroduce bidding or escrow.** If you find them in old files, they're stale.
 7. **Windows host, sometimes via WSL** — the repo is `J:\SWEEP`, also mounted as
    `/mnt/j/SWEEP` under WSL (bash). In PowerShell chain commands with `;` not `&&`;

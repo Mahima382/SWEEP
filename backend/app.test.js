@@ -2,8 +2,6 @@
  * Wiring tests for the SWEEP Express app (supertest against the
  * exported app, no listening server needed).
  */
-/* eslint-env jest */
-
 const request = require('supertest');
 const app = require('./app');
 

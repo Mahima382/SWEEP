@@ -12,7 +12,8 @@
     "docs": "jsdoc -c jsdoc.json",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
-    "test": "npm --prefix backend test && npm --prefix frontend test"
+    "test": "npm --prefix backend test && npm --prefix frontend test",
+    "test:e2e": "npm --prefix e2e test"
   },
   "devDependencies": {
     "eslint": "8.57.1",

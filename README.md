@@ -21,7 +21,7 @@ Household  →  Local Collector  →  Global Collector  →  Recycling Company
 | Controller | Express.js, Node 24, CommonJS (`backend/`) |
 | Model | MySQL via mysql2 (`backend/models/`) |
 | Auth | bcryptjs + jsonwebtoken |
-| Quality | ESLint (Airbnb) · JSDoc · Jest + Supertest + React Testing Library |
+| Quality | ESLint (Airbnb) · JSDoc · Vitest + Supertest + React Testing Library · Playwright (E2E) |
 
 ## Getting Started
 
@@ -29,10 +29,12 @@ Household  →  Local Collector  →  Global Collector  →  Recycling Company
 git clone https://github.com/Mahima382/SWEEP.git
 cd SWEEP
 
-# install all three package trees
+# install all four package trees
 npm install
 npm install --prefix backend
 npm install --prefix frontend
+npm install --prefix e2e
+npx --prefix e2e playwright install chromium   # one-time browser download
 
 # configure the backend environment
 cp backend/.env.example backend/.env   # then edit DB credentials / JWT secret
@@ -42,14 +44,15 @@ cp backend/.env.example backend/.env   # then edit DB credentials / JWT secret
 
 ```bash
 npm run dev:backend     # Express API on http://localhost:5000  (GET /health to check)
-npm run dev:frontend    # Vite dev server on http://localhost:5173 (proxies /api → :5000)
+npm run dev:frontend    # Vite dev server on http://localhost:3000 (proxies /api → :5000)
 ```
 
 ## Quality Checks
 
 ```bash
 npm run lint            # ESLint (Airbnb) over the whole repo — zero errors required
-npm test                # backend (Jest + Supertest) then frontend (Jest + RTL) suites
+npm test                # backend (Vitest + Supertest) then frontend (Vitest + RTL) suites
+npm run test:e2e        # Playwright — boots real backend + frontend, drives Chromium
 npm run docs            # generate JSDoc into docs/ (gitignored)
 ```
 

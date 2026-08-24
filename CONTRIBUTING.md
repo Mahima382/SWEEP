@@ -69,7 +69,7 @@ Rules:
 
 - [ ] `npm run lint` — **zero errors, zero warnings** (`server.js` suppresses its boot log with a targeted `eslint-disable-next-line no-console`)
 - [ ] **JSDoc** on every new class, constructor, and exported function — with `@param` and `@returns`
-- [ ] **Jest test alongside the source**: `foo.js` → `foo.test.js`, and `npm test` passes
+- [ ] **Vitest test alongside the source**: `foo.js` → `foo.test.js`, and `npm test` passes
 - [ ] **No bidding or escrow** concepts — both are cut from scope; delete stale references on sight
 - [ ] **MVC boundaries respected**: React never queries MySQL · controllers never render · models never import Express
 - [ ] Branch is rebased on latest `develop`; PR targets `develop`
@@ -91,7 +91,7 @@ cp backend/.env.example backend/.env   # then fill in DB creds etc.
 # Run
 npm run dev:backend     # Express on port 5000
 npm run dev:frontend    # React (Vite)
-npm test                # Jest
+npm test                # Vitest
 npm run lint            # must be zero errors
 ```
 
