@@ -24,5 +24,8 @@ e2e/playwright-report/
 .DS_Store
 Thumbs.db
 
-# Claude Code project instructions (local only — Project Overview.md is the pushed copy)
+# Claude Code project instructions (local only - Project Overview.md is the pushed copy)
 CLAUDE.md
+
+# Local tracking file (not for commit)
+FR11_PROGRESS.md
