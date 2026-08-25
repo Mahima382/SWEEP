@@ -7,6 +7,7 @@ const {
   findAll,
   findById,
   updateStatus,
+  updateKycStatus,
   isSuperAdmin,
 } = require('../models/userModel');
 
@@ -200,6 +201,100 @@ async function handleConfirmAction(req, res) {
   }
 }
 
+/**
+ * Verifies a user's KYC status.
+ *
+ * Rules enforced:
+ * - KYC verification requires authenticated admin
+ * - User's kyc_status is updated to 'verified'
+ * - Protected super-admin accounts can be KYC-verified
+ *
+ * @param {object} req - Express request:
+ *   - req.params.userId - The user's id
+ * @param {object} res - Express response object.
+ * @returns {void}
+ */
+async function kycVerifyUser(req, res) {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    // Get current user to check role
+    const currentUser = req.user;
+    if (!currentUser || currentUser.role !== 'admin') {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Update user KYC status to verified
+    const affectedRows = await updateKycStatus(userId, 'verified');
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.json({
+      message: 'User KYC verified successfully',
+      userId,
+      newKycStatus: 'verified',
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to verify user KYC' });
+  }
+}
+
+/**
+ * Rejects a user's KYC status.
+ *
+ * Rules enforced:
+ * - KYC rejection requires a reason (enforced by backend)
+ * - User's kyc_status is updated to 'rejected'
+ * - Reason is required and must not be empty
+ * - Protected super-admin accounts can have KYC rejected
+ *
+ * @param {object} req - Express request:
+ *   - req.params.userId - The user's id
+ *   - req.body.reason - The reason for KYC rejection (required)
+ * @param {object} res - Express response object.
+ * @returns {void}
+ */
+async function kycRejectUser(req, res) {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    const { reason } = req.body;
+
+    if (!reason || reason.trim().length === 0) {
+      return res.status(400).json({ error: 'Reason is required for KYC rejection' });
+    }
+
+    // Get current user to check role
+    const currentUser = req.user;
+    if (!currentUser || currentUser.role !== 'admin') {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Update user KYC status to rejected with reason
+    const affectedRows = await updateKycStatus(userId, 'rejected', reason);
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.json({
+      message: 'User KYC rejected successfully',
+      userId,
+      newKycStatus: 'rejected',
+      reason: reason.trim(),
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to reject user KYC' });
+  }
+}
+
 module.exports = {
-  listUsers, getUser, suspendOrBanUser, reinstateUser, handleConfirmAction,
+  listUsers,
+  getUser,
+  suspendOrBanUser,
+  reinstateUser,
+  handleConfirmAction,
+  kycVerifyUser,
+  kycRejectUser,
 };

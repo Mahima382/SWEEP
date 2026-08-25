@@ -129,6 +129,39 @@ async function updateStatus(userId, updates) {
 }
 
 /**
+ * Updates a user's KYC status.
+ *
+ * @param {number} userId - The user's id
+ * @param {string} kycStatus - New KYC status (pending, verified, rejected)
+ * @param {string} [updates.reason] - Reason for the KYC rejection (required if rejecting)
+ * @returns {Promise<number>} The number of affected rows
+ */
+async function updateKycStatus(userId, kycStatus, reason) {
+  const sets = [];
+  const params = [];
+
+  sets.push('kyc_status = ?');
+  params.push(kycStatus);
+
+  if (reason && reason.trim().length > 0 && kycStatus === 'rejected') {
+    sets.push('reason = ?');
+    params.push(reason.trim());
+  }
+
+  if (sets.length === 0) {
+    throw new Error('No updates provided');
+  }
+
+  params.push(userId);
+
+  const [result] = await db.query(
+    `UPDATE users SET ${sets.join(', ')} WHERE id = ?`,
+    params,
+  );
+  return result.affectedRows;
+}
+
+/**
  * Checks if a user is a protected super-admin.
  *
  * @param {number} userId - The user's id
@@ -145,5 +178,6 @@ module.exports = {
   findAll,
   create,
   updateStatus,
+  updateKycStatus,
   isSuperAdmin,
 };

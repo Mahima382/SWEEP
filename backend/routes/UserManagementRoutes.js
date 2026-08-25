@@ -8,6 +8,8 @@
  *   POST    /:userId/ban       - Ban a user with a reason
  *   POST    /:userId/reinstate - Reinstate a suspended/banned user
  *   POST    /:userId/confirm   - Handle confirm action from drawer
+ *   POST    /:userId/kyc-verify - Verify a user's KYC status
+ *   POST    /:userId/kyc-reject - Reject a user's KYC status
  */
 
 const express = require('express');
@@ -25,5 +27,8 @@ router.post('/:userId/ban', controller.suspendOrBanUser);
 router.post('/:userId/reinstate', controller.reinstateUser);
 
 router.post('/:userId/confirm', controller.handleConfirmAction);
+
+router.post('/:userId/kyc-verify', controller.kycVerifyUser);
+router.post('/:userId/kyc-reject', controller.kycRejectUser);
 
 module.exports = router;
