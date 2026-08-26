@@ -17,8 +17,8 @@ const BASE_URL = '/api';
  */
 export async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
+    headers: { 'Content-Type': 'application/json', ...options.headers },
   });
 
   let body = null;
@@ -41,20 +41,24 @@ export async function request(path, options = {}) {
 /**
  * Send a GET request to the backend API.
  * @param {string} path API path, e.g. '/waste/listings'.
+ * @param {object} [options] Extra fetch options, e.g. `{ headers }` for an
+ *   Authorization header on an authenticated endpoint.
  * @returns {Promise<object>} The parsed JSON response body.
  */
-export function get(path) {
-  return request(path, { method: 'GET' });
+export function get(path, options = {}) {
+  return request(path, { ...options, method: 'GET' });
 }
 
 /**
  * Send a POST request with a JSON payload to the backend API.
  * @param {string} path API path, e.g. '/auth/login'.
  * @param {object} data Payload to serialise as the JSON body.
+ * @param {object} [options] Extra fetch options, e.g. `{ headers }` for an
+ *   Authorization header on an authenticated endpoint.
  * @returns {Promise<object>} The parsed JSON response body.
  */
-export function post(path, data) {
-  return request(path, { method: 'POST', body: JSON.stringify(data) });
+export function post(path, data, options = {}) {
+  return request(path, { ...options, method: 'POST', body: JSON.stringify(data) });
 }
 
 export default { request, get, post };
