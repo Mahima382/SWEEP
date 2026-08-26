@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 /**
  * Vite configuration for the SWEEP frontend (View layer).
@@ -8,9 +9,9 @@ import react from '@vitejs/plugin-react';
  * The `test` block configures Vitest, which reuses this same Vite pipeline.
  */
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
-    port: 3000,
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
