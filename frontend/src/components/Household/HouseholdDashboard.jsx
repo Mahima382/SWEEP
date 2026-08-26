@@ -1,17 +1,23 @@
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import HouseholdLayout from './HouseholdLayout';
+import HouseholdOverview from './HouseholdOverview';
+import HouseholdWallet from './HouseholdWallet';
+import WasteListings from './WasteListings';
 
 /**
- * Household dashboard placeholder (FR-03, FR-04).
- * Owner: Household team member — extend this folder with listing,
- * pickup-request, and wallet components.
- * @returns {JSX.Element} The household dashboard stub.
+ * Household area: dashboard shell with nested overview, listings, and wallet.
+ * @returns {JSX.Element} Household routes inside the sidebar layout.
  */
 function HouseholdDashboard() {
   return (
-    <section>
-      <h1>Household Dashboard</h1>
-      <p>Waste listings, pickup requests, and wallet will appear here.</p>
-    </section>
+    <HouseholdLayout>
+      <Routes>
+        <Route index element={<HouseholdOverview />} />
+        <Route path="listings" element={<WasteListings />} />
+        <Route path="wallet" element={<HouseholdWallet />} />
+      </Routes>
+    </HouseholdLayout>
   );
 }
 

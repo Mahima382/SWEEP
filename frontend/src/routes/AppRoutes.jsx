@@ -24,11 +24,11 @@ import AdminDashboard from '../components/Admin/AdminDashboard';
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/household" element={<HouseholdDashboard />} />
+        <Route path="/household/*" element={<HouseholdDashboard />} />
         <Route path="/collector" element={<CollectorDashboard />} />
         <Route path="/company" element={<CompanyDashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
