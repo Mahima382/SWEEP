@@ -13,9 +13,13 @@
  */
 
 const express = require('express');
+const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 const controller = require('../controllers/UserManagementController');
+
+router.use(authenticate);
+router.use(authorize(['admin']));
 
 router.get('/', controller.listUsers);
 

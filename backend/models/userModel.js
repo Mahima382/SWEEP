@@ -102,7 +102,8 @@ async function findAll(filters = {}) {
  * @param {string} [updates.reason] - Reason for the status change (required for suspend/ban)
  * @returns {Promise<number>} The number of affected rows
  */
-async function updateStatus(userId, updates) {
+async function updateStatus(userId, updates, connection) {
+  const cx = connection || db;
   const sets = [];
   const params = [];
 
@@ -121,7 +122,7 @@ async function updateStatus(userId, updates) {
 
   params.push(userId);
 
-  const [result] = await db.query(
+  const [result] = await cx.query(
     `UPDATE users SET ${sets.join(', ')} WHERE id = ?`,
     params,
   );
@@ -136,7 +137,8 @@ async function updateStatus(userId, updates) {
  * @param {string} [updates.reason] - Reason for the KYC rejection (required if rejecting)
  * @returns {Promise<number>} The number of affected rows
  */
-async function updateKycStatus(userId, kycStatus, reason) {
+async function updateKycStatus(userId, kycStatus, reason, connection) {
+  const cx = connection || db;
   const sets = [];
   const params = [];
 
@@ -154,7 +156,7 @@ async function updateKycStatus(userId, kycStatus, reason) {
 
   params.push(userId);
 
-  const [result] = await db.query(
+  const [result] = await cx.query(
     `UPDATE users SET ${sets.join(', ')} WHERE id = ?`,
     params,
   );

@@ -18,6 +18,11 @@ const notificationRoutes = require('./routes/notification.routes');
 const reviewRoutes = require('./routes/review.routes');
 const adminRoutes = require('./routes/admin.routes');
 const userManagementRoutes = require('./routes/UserManagementRoutes');
+const pricingRoutes = require('./routes/pricing.routes');
+const subscriptionRoutes = require('./routes/subscription.routes');
+const fraudRoutes = require('./routes/fraud.routes');
+const auditRoutes = require('./routes/audit.routes');
+const reportRoutes = require('./routes/report.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -38,6 +43,11 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/users', userManagementRoutes);
+app.use('/api/admin/pricing', pricingRoutes);
+app.use('/api/admin/subscriptions', subscriptionRoutes);
+app.use('/api/admin/fraud', fraudRoutes);
+app.use('/api/admin/audit', auditRoutes);
+app.use('/api/admin/reports', reportRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Not found: ${req.method} ${req.originalUrl}` });

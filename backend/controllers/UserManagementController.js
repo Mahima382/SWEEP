@@ -10,6 +10,7 @@ const {
   updateKycStatus,
   isSuperAdmin,
 } = require('../models/userModel');
+const { withAudit } = require('../services/auditService');
 
 /**
  * Lists admin users with search and filter support.
@@ -90,11 +91,25 @@ async function suspendOrBanUser(req, res) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // Update user status
-    const affectedRows = await updateStatus(userId, {
-      status: action === 'Ban' ? 'banned' : 'suspended',
-      reason: reason.trim(),
-    });
+    // Update user status (audited, fail-closed: action + audit in one tx)
+    const affectedRows = await withAudit(
+      {
+        actorId: currentUser.id,
+        actorRole: 'admin',
+        action: action === 'Ban' ? 'user.banned' : 'user.suspended',
+        targetType: 'user',
+        targetId: userId,
+        details: { reason: reason.trim() },
+      },
+      (conn) => updateStatus(
+        userId,
+        {
+          status: action === 'Ban' ? 'banned' : 'suspended',
+          reason: reason.trim(),
+        },
+        conn,
+      ),
+    );
 
     if (affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -133,11 +148,18 @@ async function reinstateUser(req, res) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // Update user status to active, clear reason
-    const affectedRows = await updateStatus(userId, {
-      status: 'active',
-      reason: null,
-    });
+    // Update user status to active, clear reason (audited, fail-closed)
+    const affectedRows = await withAudit(
+      {
+        actorId: currentUser.id,
+        actorRole: 'admin',
+        action: 'user.reinstated',
+        targetType: 'user',
+        targetId: userId,
+        details: {},
+      },
+      (conn) => updateStatus(userId, { status: 'active', reason: null }, conn),
+    );
 
     if (affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -180,11 +202,30 @@ async function handleConfirmAction(req, res) {
       return res.status(403).json({ error: 'Action blocked: protected super-admin accounts cannot be suspended or banned' });
     }
 
-    // Update user status
-    const affectedRows = await updateStatus(userId, {
-      status: action === 'Ban' ? 'banned' : 'suspended',
-      reason: reason.trim(),
-    });
+    const currentUser = req.user;
+    if (!currentUser || currentUser.role !== 'admin') {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Update user status (audited, fail-closed: action + audit in one tx)
+    const affectedRows = await withAudit(
+      {
+        actorId: currentUser.id,
+        actorRole: 'admin',
+        action: action === 'Ban' ? 'user.banned' : 'user.suspended',
+        targetType: 'user',
+        targetId: userId,
+        details: { reason: reason.trim() },
+      },
+      (conn) => updateStatus(
+        userId,
+        {
+          status: action === 'Ban' ? 'banned' : 'suspended',
+          reason: reason.trim(),
+        },
+        conn,
+      ),
+    );
 
     if (affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -224,8 +265,18 @@ async function kycVerifyUser(req, res) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // Update user KYC status to verified
-    const affectedRows = await updateKycStatus(userId, 'verified');
+    // Update user KYC status to verified (audited, fail-closed)
+    const affectedRows = await withAudit(
+      {
+        actorId: currentUser.id,
+        actorRole: 'admin',
+        action: 'kyc.verified',
+        targetType: 'user',
+        targetId: userId,
+        details: {},
+      },
+      (conn) => updateKycStatus(userId, 'verified', undefined, conn),
+    );
 
     if (affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -271,8 +322,18 @@ async function kycRejectUser(req, res) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // Update user KYC status to rejected with reason
-    const affectedRows = await updateKycStatus(userId, 'rejected', reason);
+    // Update user KYC status to rejected with reason (audited, fail-closed)
+    const affectedRows = await withAudit(
+      {
+        actorId: currentUser.id,
+        actorRole: 'admin',
+        action: 'kyc.rejected',
+        targetType: 'user',
+        targetId: userId,
+        details: { reason: reason.trim() },
+      },
+      (conn) => updateKycStatus(userId, 'rejected', reason, conn),
+    );
 
     if (affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
