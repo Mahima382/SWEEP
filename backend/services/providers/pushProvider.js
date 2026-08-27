@@ -6,9 +6,14 @@
  */
 module.exports = {
   /**
-   * @param {string} token
-   * @param {{ title: string, body: string, data?: object }} payload
-   */
+ * Sends a notification to a push token.
+ *
+ * @param {string} token - Push notification token.
+ * @param {Object} payload - Push notification payload.
+ * @param {string} payload.title - Notification title.
+ * @param {string} payload.body - Notification body.
+ * @param {Object} [payload.data] - Additional notification data.
+ */
   async sendToToken(token, payload) {
     // TODO: replace with e.g. admin.messaging().send({ token, notification: payload })
     // Simulated success keeps the notification pipeline runnable out of the box.

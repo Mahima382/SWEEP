@@ -8,7 +8,7 @@ class EmailChannel extends NotificationChannel {
   }
 
   async send(notification, recipientUser) {
-    if (!recipientUser.email) return { status: 'failed', error: 'no_email_on_file' };
+    if (!recipientUser.email) { return { status: 'failed', error: 'no_email_on_file' }; }
 
     try {
       await emailProvider.send({

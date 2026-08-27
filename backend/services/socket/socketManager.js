@@ -15,9 +15,13 @@ class SocketManager {
   }
 
   /**
-   * Call once from backend/server.js after the HTTP server is created.
-   * @param {import('http').Server} httpServer
-   */
+ * Initializes the Socket.IO server.
+ *
+ * Call once from backend/server.js after the HTTP server is created.
+ *
+ * @param {Object} httpServer - HTTP server instance.
+ * @returns {Object} Socket.IO server instance.
+ */
   init(httpServer) {
     this.io = new Server(httpServer, {
       cors: { origin: process.env.CLIENT_ORIGIN || '*', credentials: true },

@@ -23,15 +23,19 @@ class NotificationDispatcher {
   }
 
   /**
-   * @param {import('../../models/Notification')} notification - saved document
-   * @param {{ id: string, email?: string }} recipientUser
-   * @param {string[]} channelNames
-   */
+ * Dispatches a notification through the requested delivery channels.
+ *
+ * @param {Object} notification - Saved notification document.
+ * @param {Object} recipientUser - Recipient user information.
+ * @param {string} recipientUser.id - Recipient user ID.
+ * @param {string} [recipientUser.email] - Recipient email address.
+ * @param {string[]} channelNames - Names of delivery channels.
+ */
   async dispatch(notification, recipientUser, channelNames) {
     const uniqueChannels = [...new Set([NOTIFICATION_CHANNELS.IN_APP, ...channelNames])];
 
     await Promise.all(
-      uniqueChannels.map((name) => this._deliverWithRetry(notification, recipientUser, name))
+      uniqueChannels.map((name) => this._deliverWithRetry(notification, recipientUser, name)),
     );
 
     await notification.save();
@@ -40,7 +44,7 @@ class NotificationDispatcher {
 
   async _deliverWithRetry(notification, recipientUser, channelName, attempt = 0) {
     const channel = this.channels[channelName];
-    if (!channel) return;
+    if (!channel) { return; }
 
     let entry = notification.deliveryStatus.find((d) => d.channel === channelName);
     if (!entry) {
@@ -59,9 +63,7 @@ class NotificationDispatcher {
       const canRetry = result.status === 'failed' && channelName !== NOTIFICATION_CHANNELS.IN_APP;
       if (canRetry && attempt < RETRY_DELAYS_MS.length) {
         setTimeout(() => {
-          this._deliverWithRetry(notification, recipientUser, channelName, attempt + 1).then(() =>
-            notification.save()
-          );
+          this._deliverWithRetry(notification, recipientUser, channelName, attempt + 1).then(() => notification.save());
         }, RETRY_DELAYS_MS[attempt]);
       }
     } catch (err) {

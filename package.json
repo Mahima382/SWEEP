@@ -16,6 +16,7 @@
     "test:e2e": "npm --prefix e2e test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "eslint": "8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.25.3",

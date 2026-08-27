@@ -1,78 +1,194 @@
-import { createContext, useCallback, useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
+// frontend/src/context/NotificationContext.jsx
+
 import {
-  fetchNotifications,
-  fetchUnreadCount,
-  markNotificationRead,
-  markAllNotificationsRead,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+
+import { io } from 'socket.io-client';
+
+import {
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
 } from '../services/notificationService';
 
-export const NotificationContext = createContext(null);
+const NotificationContext =
+  createContext(null);
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+const SOCKET_URL =
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:5000';
 
-/**
- * Holds the live notification list + unread count for the current user
- * and keeps both in sync with the server in real time over Socket.IO.
- * Wrap the authenticated part of the app with this provider once,
- * passing the current session's auth token.
- */
-export function NotificationProvider({ children, authToken }) {
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const socketRef = useRef(null);
+export function NotificationProvider({
+  userId,
+  children,
+}) {
+  const [notifications, setNotifications] =
+    useState([]);
 
-  const loadInitial = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [{ items }, count] = await Promise.all([
-        fetchNotifications({ page: 1, limit: 20 }),
-        fetchUnreadCount(),
-      ]);
-      setNotifications(items);
-      setUnreadCount(count);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [unreadCount, setUnreadCount] =
+    useState(0);
+
+  const loadNotifications = useCallback(
+    async () => {
+      if (!userId) return;
+
+      const response =
+        await getNotifications();
+
+      setNotifications(response.data || []);
+      setUnreadCount(response.unreadCount || 0);
+    },
+    [userId]
+  );
 
   useEffect(() => {
-    if (!authToken) return undefined;
+    if (!userId) return;
 
-    loadInitial();
+    loadNotifications();
 
-    const socket = io(SOCKET_URL, { auth: { token: authToken } });
-    socketRef.current = socket;
-
-    socket.on('notification:new', (notification) => {
-      setNotifications((prev) => [notification, ...prev]);
-      setUnreadCount((prev) => prev + 1);
+    const socket = io(SOCKET_URL, {
+      withCredentials: true,
     });
 
-    return () => socket.disconnect();
-  }, [authToken, loadInitial]);
+    socket.on('connect', () => {
+      socket.emit(
+        'notification:register',
+        userId
+      );
+    });
 
-  const markAsRead = useCallback(async (id) => {
-    setNotifications((prev) => prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)));
-    setUnreadCount((prev) => Math.max(0, prev - 1));
-    await markNotificationRead(id);
-  }, []);
+    socket.on(
+      'notification:new',
+      (notification) => {
+        setNotifications((current) => [
+          notification,
+          ...current,
+        ]);
 
-  const markAllAsRead = useCallback(async () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    setUnreadCount(0);
-    await markAllNotificationsRead();
-  }, []);
+        setUnreadCount((current) => current + 1);
+      }
+    );
 
-  const value = {
-    notifications,
-    unreadCount,
-    loading,
-    markAsRead,
-    markAllAsRead,
-    refresh: loadInitial,
-  };
+    socket.on(
+      'notification:read',
+      ({ notificationId }) => {
+        setNotifications((current) =>
+          current.map((notification) =>
+            notification.id === notificationId
+              ? {
+                  ...notification,
+                  is_read: true,
+                }
+              : notification
+          )
+        );
 
-  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
+        setUnreadCount((current) =>
+          Math.max(current - 1, 0)
+        );
+      }
+    );
+
+    socket.on(
+      'notification:all-read',
+      () => {
+        setNotifications((current) =>
+          current.map((notification) => ({
+            ...notification,
+            is_read: true,
+          }))
+        );
+
+        setUnreadCount(0);
+      }
+    );
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [userId, loadNotifications]);
+
+  const markAsRead = useCallback(
+    async (notificationId) => {
+      await markNotificationAsRead(
+        notificationId
+      );
+
+      setNotifications((current) =>
+        current.map((notification) =>
+          notification.id === notificationId
+            ? {
+                ...notification,
+                is_read: true,
+              }
+            : notification
+        )
+      );
+
+      setUnreadCount((current) =>
+        Math.max(current - 1, 0)
+      );
+    },
+    []
+  );
+
+  const markAllAsRead = useCallback(
+    async () => {
+      await markAllNotificationsAsRead();
+
+      setNotifications((current) =>
+        current.map((notification) => ({
+          ...notification,
+          is_read: true,
+        }))
+      );
+
+      setUnreadCount(0);
+    },
+    []
+  );
+
+  const value = useMemo(
+    () => ({
+      notifications,
+      unreadCount,
+      loadNotifications,
+      markAsRead,
+      markAllAsRead,
+    }),
+    [
+      notifications,
+      unreadCount,
+      loadNotifications,
+      markAsRead,
+      markAllAsRead,
+    ]
+  );
+
+  return (
+    <NotificationContext.Provider
+      value={value}
+    >
+      {children}
+    </NotificationContext.Provider>
+  );
+}
+
+export function useNotifications() {
+  const context =
+    useContext(NotificationContext);
+
+  if (!context) {
+    throw new Error(
+      'useNotifications must be used inside NotificationProvider'
+    );
+  }
+
+  return context;
 }

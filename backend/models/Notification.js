@@ -1,84 +1,119 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const {
-  NOTIFICATION_CATEGORIES,
-  NOTIFICATION_PRIORITIES,
-  NOTIFICATION_CHANNELS,
-} = require('../utils/constants/notificationConstants');
+// backend/models/Notification.js
 
-const actionSchema = new Schema(
-  {
-    label: { type: String, required: true },
-    action: { type: String, required: true }, // e.g. 'ACCEPT_PICKUP', 'VIEW_ORDER'
-    target: { type: Schema.Types.Mixed }, // usually the related entity's id
-  },
-  { _id: false }
-);
+const pool = require('../config/db');
 
-const deliveryStatusSchema = new Schema(
-  {
-    channel: { type: String, enum: Object.values(NOTIFICATION_CHANNELS), required: true },
-    status: { type: String, enum: ['pending', 'sent', 'failed'], default: 'pending' },
-    attempts: { type: Number, default: 0 },
-    lastAttemptAt: { type: Date },
-    error: { type: String },
-  },
-  { _id: false }
-);
+class Notification {
+  static async create({
+    recipientId,
+    type,
+    priority = 'Normal',
+    title,
+    message,
+    referenceType = null,
+    referenceId = null,
+    actionType = null,
+    actionUrl = null,
+  }) {
+    const [result] = await pool.execute(
+      `INSERT INTO notifications
+       (
+         recipient_id,
+         type,
+         priority,
+         title,
+         message,
+         reference_type,
+         reference_id,
+         action_type,
+         action_url
+       )
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        recipientId,
+        type,
+        priority,
+        title,
+        message,
+        referenceType,
+        referenceId,
+        actionType,
+        actionUrl,
+      ],
+    );
 
-const notificationSchema = new Schema(
-  {
-    recipient: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    recipientRole: { type: String, required: true },
-
-    // The domain event that produced this notification, e.g. 'pickup.request.new'.
-    event: { type: String, required: true },
-
-    category: { type: String, enum: Object.values(NOTIFICATION_CATEGORIES), required: true },
-    priority: {
-      type: String,
-      enum: Object.values(NOTIFICATION_PRIORITIES),
-      default: NOTIFICATION_PRIORITIES.NORMAL,
-    },
-
-    // Mandatory notifications ignore the recipient's channel preferences
-    // (e.g. SECURITY events, critical account changes) per FR-09.
-    mandatory: { type: Boolean, default: false },
-
-    title: { type: String, required: true },
-    body: { type: String, required: true },
-
-    // Free-form contextual payload (pickupId, orderId, zoneLabel, etc.)
-    // used to render the notification and to resolve contextual actions.
-    data: { type: Schema.Types.Mixed, default: {} },
-
-    actions: { type: [actionSchema], default: [] },
-    deliveryStatus: { type: [deliveryStatusSchema], default: [] },
-
-    // Used to make notification creation idempotent for a given
-    // recipient — the same domain event fired twice must not create
-    // two inbox entries.
-    dedupeKey: { type: String, index: true },
-
-    isRead: { type: Boolean, default: false, index: true },
-    readAt: { type: Date },
-  },
-  { timestamps: true }
-);
-
-notificationSchema.index({ recipient: 1, dedupeKey: 1 }, { unique: true, sparse: true });
-notificationSchema.index({ recipient: 1, isRead: 1, createdAt: -1 });
-
-notificationSchema.methods.markAsRead = function markAsRead() {
-  if (!this.isRead) {
-    this.isRead = true;
-    this.readAt = new Date();
+    return this.findById(result.insertId);
   }
-  return this;
-};
 
-notificationSchema.statics.getUnreadCount = function getUnreadCount(userId) {
-  return this.countDocuments({ recipient: userId, isRead: false });
-};
+  static async findById(id) {
+    const [rows] = await pool.execute(
+      `SELECT *
+       FROM notifications
+       WHERE id = ?`,
+      [id],
+    );
 
-module.exports = mongoose.model('Notification', notificationSchema);
+    return rows[0] || null;
+  }
+
+  static async findByUser(
+    recipientId,
+    { limit = 20, offset = 0, unreadOnly = false } = {},
+  ) {
+    const condition = unreadOnly
+      ? 'AND is_read = FALSE'
+      : '';
+
+    const [rows] = await pool.execute(
+      `SELECT *
+       FROM notifications
+       WHERE recipient_id = ?
+       ${condition}
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`,
+      [recipientId, Number(limit), Number(offset)],
+    );
+
+    return rows;
+  }
+
+  static async countUnread(recipientId) {
+    const [rows] = await pool.execute(
+      `SELECT COUNT(*) AS unreadCount
+       FROM notifications
+       WHERE recipient_id = ?
+       AND is_read = FALSE`,
+      [recipientId],
+    );
+
+    return rows[0].unreadCount;
+  }
+
+  static async markAsRead(id, recipientId) {
+    const [result] = await pool.execute(
+      `UPDATE notifications
+       SET is_read = TRUE,
+           read_at = CURRENT_TIMESTAMP
+       WHERE id = ?
+       AND recipient_id = ?
+       AND is_read = FALSE`,
+      [id, recipientId],
+    );
+
+    return result.affectedRows > 0;
+  }
+
+  static async markAllAsRead(recipientId) {
+    const [result] = await pool.execute(
+      `UPDATE notifications
+       SET is_read = TRUE,
+           read_at = CURRENT_TIMESTAMP
+       WHERE recipient_id = ?
+       AND is_read = FALSE`,
+      [recipientId],
+    );
+
+    return result.affectedRows;
+  }
+}
+
+module.exports = Notification;

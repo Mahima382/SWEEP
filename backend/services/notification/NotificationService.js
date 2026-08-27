@@ -125,13 +125,18 @@ class NotificationService {
   }
 
   /**
-   * Persists the user's channel/mute choices as given. Mandatory
-   * notifications (see NotificationFactory) ignore these preferences
-   * at dispatch time regardless of what's saved here, so there is no
-   * need to special-case "un-mutable" categories in this method.
-   * @param {string} userId
-   * @param {Array<{category: string, inApp?: boolean, push?: boolean, email?: boolean, muted?: boolean}>} categories
-   */
+ * Persists the user's channel and mute choices.
+ *
+ * Mandatory notifications ignore these preferences at dispatch time.
+ *
+ * @param {string} userId - User ID.
+ * @param {Array<Object>} categories - Notification category preferences.
+ * @param {string} categories[].category - Notification category.
+ * @param {boolean} [categories[].inApp] - Enable in-app notifications.
+ * @param {boolean} [categories[].push] - Enable push notifications.
+ * @param {boolean} [categories[].email] - Enable email notifications.
+ * @param {boolean} [categories[].muted] - Mute the category.
+ */
   updatePreferences(userId, categories) {
     return NotificationPreference.findOneAndUpdate(
       { user: userId },

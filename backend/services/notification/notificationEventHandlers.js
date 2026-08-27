@@ -82,12 +82,14 @@ const ALL_EVENTS = [
  */
 function initNotificationEventHandlers() {
   ALL_EVENTS.forEach((event) => {
-    if (!NotificationFactory.hasRule(event)) return; // safety net against drift
+    if (!NotificationFactory.hasRule(event)) { return; } // safety net against drift
 
     eventBus.on(event, (payload = {}) => {
       const { recipientId, recipientRole, ...data } = payload;
 
-      notificationService.notify({ recipientId, recipientRole, event, data }).catch((err) => {
+      notificationService.notify({
+        recipientId, recipientRole, event, data,
+      }).catch((err) => {
         // Notification failures must never roll back or duplicate the
         // originating business operation (FR-09 edge case).
         // eslint-disable-next-line no-console

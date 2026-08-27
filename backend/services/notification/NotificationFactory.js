@@ -144,8 +144,7 @@ const NOTIFICATION_RULES = {
     priority: PRI.IMPORTANT,
     defaultChannels: [CH.PUSH],
     title: () => 'Bulk lot ready for pickup',
-    body: (d) =>
-      `${d.localCollectorName} · ${d.lotCategories} · ${d.totalWeight} · ${d.pickupLocation} → ${d.destinationCompany}`,
+    body: (d) => `${d.localCollectorName} · ${d.lotCategories} · ${d.totalWeight} · ${d.pickupLocation} → ${d.destinationCompany}`,
     actions: (d) => [{ label: 'Track Pickup', action: 'TRACK_PICKUP', target: d.lotId }],
     dedupeKey: (d) => `bulkLot.readyForPickup:${d.lotId}`,
   },

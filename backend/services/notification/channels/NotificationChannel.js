@@ -7,15 +7,23 @@
  * without touching dispatch logic anywhere else.
  */
 class NotificationChannel {
-  /** @returns {string} channel identifier — must match NOTIFICATION_CHANNELS */
+  /**
+   * Gets the channel identifier.
+   *
+   * @returns {string} Channel identifier. Must match NOTIFICATION_CHANNELS.
+   */
   get name() {
     throw new Error('NotificationChannel.name must be implemented by a subclass');
   }
 
   /**
-   * @param {import('../../../models/Notification')} notification - saved notification document
-   * @param {{ id: string, email?: string }} recipientUser
-   * @returns {Promise<{ status: 'sent' | 'failed', error?: string }>}
+   * Sends a notification through the delivery channel.
+   *
+   * @param {Object} notification - Saved notification document.
+   * @param {Object} recipientUser - Recipient user information.
+   * @param {string} recipientUser.id - Recipient user ID.
+   * @param {string} [recipientUser.email] - Recipient email address.
+   * @returns {Promise<Object>} Delivery result.
    */
   // eslint-disable-next-line no-unused-vars
   async send(notification, recipientUser) {

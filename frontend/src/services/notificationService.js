@@ -1,23 +1,54 @@
-// Assumed to already exist per the project's services/ convention:
-// a pre-configured axios instance with baseURL + auth header interceptor.
-import api from '../utils/apiClient';
+// frontend/src/services/notificationService.js
 
-export const fetchNotifications = ({ category, isRead, page = 1, limit = 20 } = {}) =>
-  api.get('/notifications', { params: { category, isRead, page, limit } }).then((r) => r.data);
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
-export const fetchUnreadCount = () =>
-  api.get('/notifications/unread-count').then((r) => r.data.count);
+async function request(url, options = {}) {
+  const response = await fetch(
+    `${API_BASE_URL}${url}`,
+    {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      ...options,
+    }
+  );
 
-export const markNotificationRead = (id) =>
-  api.patch(`/notifications/${id}/read`).then((r) => r.data);
+  const data = await response.json();
 
-export const markAllNotificationsRead = () => api.patch('/notifications/read-all');
+  if (!response.ok) {
+    throw new Error(
+      data.message || 'Notification request failed'
+    );
+  }
 
-export const fetchNotificationPreferences = () =>
-  api.get('/notifications/preferences').then((r) => r.data);
+  return data;
+}
 
-export const updateNotificationPreferences = (categories) =>
-  api.put('/notifications/preferences', { categories }).then((r) => r.data);
+export async function getNotifications({
+  limit = 20,
+  offset = 0,
+  unreadOnly = false,
+} = {}) {
+  return request(
+    `/notifications?limit=${limit}&offset=${offset}&unreadOnly=${unreadOnly}`
+  );
+}
 
-export const registerPushToken = (token, platform) =>
-  api.post('/notifications/push-token', { token, platform }).then((r) => r.data);
+export async function getUnreadCount() {
+  return request('/notifications/unread-count');
+}
+
+export async function markNotificationAsRead(id) {
+  return request(`/notifications/${id}/read`, {
+    method: 'PATCH',
+  });
+}
+
+export async function markAllNotificationsAsRead() {
+  return request('/notifications/read-all', {
+    method: 'PATCH',
+  });
+}
