@@ -17,8 +17,7 @@ import AdminDashboard from '../components/Admin/AdminDashboard';
  * Teammates: add new <Route /> entries ONE PER LINE inside the layout block
  * below (keep alphabetical-ish grouping by role) so git merges stay clean.
  * Do not reformat existing lines when adding yours.
- * hahaha sakib 
- * mogoda
+ * hahaha sakib hehe
  */
 
 /**
