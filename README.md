@@ -50,10 +50,19 @@ npm run dev:frontend    # Vite dev server on http://localhost:3000 (proxies /api
 ## Quality Checks
 
 ```bash
-npm run lint            # ESLint (Airbnb) over the whole repo — zero errors required
-npm test                # backend (Vitest + Supertest) then frontend (Vitest + RTL) suites
-npm run test:e2e        # Playwright — boots real backend + frontend, drives Chromium
-npm run docs            # generate JSDoc into docs/ (gitignored)
+npm run lint             # ESLint (Airbnb) over the whole repo — zero errors required
+npm test                 # backend (Vitest + Supertest) then frontend (Vitest + RTL) suites
+npm --prefix backend test    # backend suite only
+npm --prefix frontend test   # frontend suite only
+npm run test:e2e         # Playwright — boots real backend + frontend, drives Chromium
+npm run docs             # generate JSDoc into docs/ (gitignored)
+```
+
+Run a single test file directly with Vitest:
+
+```bash
+npx vitest run backend/utils/validators.test.js
+npx vitest run frontend/src/components/Auth/AccountTypeSelect.test.jsx --config frontend/vite.config.js
 ```
 
 ## Project Structure
