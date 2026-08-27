@@ -8,7 +8,15 @@ import NotFound from '../pages/NotFound';
 import HouseholdDashboard from '../components/Household/HouseholdDashboard';
 import CollectorDashboard from '../components/Collector/CollectorDashboard';
 import CompanyDashboard from '../components/Company/CompanyDashboard';
+import AdminLayout from '../components/Admin/AdminLayout';
 import AdminDashboard from '../components/Admin/AdminDashboard';
+import UserManagement from '../components/Admin/UserManagement';
+import KYCReview from '../components/Admin/KYCReview';
+import Pricing from '../components/Admin/Pricing';
+import Subscriptions from '../components/Admin/Subscriptions';
+import FraudDetection from '../components/Admin/FraudDetection';
+import AuditLog from '../components/Admin/AuditLog';
+import Reports from '../components/Admin/Reports';
 
 /*
  * SHARED FILE — route table for the whole app.
@@ -31,7 +39,16 @@ function AppRoutes() {
         <Route path="/household" element={<HouseholdDashboard />} />
         <Route path="/collector" element={<CollectorDashboard />} />
         <Route path="/company" element={<CompanyDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="kyc" element={<KYCReview />} />
+          <Route path="pricing" element={<Pricing />} />
+          <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="fraud" element={<FraudDetection />} />
+          <Route path="audit" element={<AuditLog />} />
+          <Route path="reports" element={<Reports />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

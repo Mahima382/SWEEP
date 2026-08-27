@@ -6,6 +6,8 @@ import { AuthContext } from '../context/AuthContext';
  * @returns {{user: (object|null), setUser: Function, logout: Function}}
  *   The current auth context value.
  */
-export default function useAuth() {
+export function useAuth() {
   return useContext(AuthContext);
 }
+
+export default useAuth;
