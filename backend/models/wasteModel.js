@@ -1,31 +1,102 @@
 /**
- * Waste model — data access for listings and pickups (D2 Listings, D3 Pickups).
- * Model layer only: no Express imports, SQL via the shared pool.
+ * Waste model - data access for listings and pickups.
+ * Model layer only: no Express imports.
  */
 
-// eslint-disable-next-line no-unused-vars
 const db = require('../config/db');
 
-/**
- * Finds waste listings for a household.
- *
- * @param {number} householdId - The household user's id.
- * @returns {Promise<object[]>} The household's listings.
- */
-// eslint-disable-next-line no-unused-vars
 async function findByHousehold(householdId) {
-  throw new Error('Not implemented');
+    const [rows] = await db.execute(
+        `SELECT *
+         FROM pickups
+         WHERE household_id = ?
+         ORDER BY pickup_date, pickup_time`,
+        [householdId]
+    );
+
+    return rows;
 }
 
-/**
- * Creates a new waste listing.
- *
- * @param {object} listing - Listing fields (category, weight, photos, suggestedPrice, ...).
- * @returns {Promise<number>} The inserted listing's id.
- */
-// eslint-disable-next-line no-unused-vars
-async function create(listing) {
-  throw new Error('Not implemented');
+async function findPendingPickups() {
+    const [rows] = await db.execute(
+        `SELECT *
+         FROM pickups
+         WHERE status = 'PENDING'
+         ORDER BY pickup_date, pickup_time`
+    );
+
+    return rows;
 }
 
-module.exports = { findByHousehold, create };
+async function findByCollectorAndDate(collectorId, pickupDate) {
+    const [rows] = await db.execute(
+        `SELECT *
+         FROM pickups
+         WHERE collector_id = ?
+           AND pickup_date = ?
+           AND status NOT IN ('DECLINED', 'COMPLETED')
+         ORDER BY pickup_time`,
+        [collectorId, pickupDate]
+    );
+
+    return rows;
+}
+
+async function findById(pickupId) {
+    const [rows] = await db.execute(
+        `SELECT *
+         FROM pickups
+         WHERE id = ?`,
+        [pickupId]
+    );
+
+    return rows[0] || null;
+}
+
+async function acceptPickup(pickupId, collectorId) {
+    const [result] = await db.execute(
+        `UPDATE pickups
+         SET collector_id = ?,
+             status = 'ACCEPTED'
+         WHERE id = ?
+           AND status = 'PENDING'`,
+        [collectorId, pickupId]
+    );
+
+    return result.affectedRows;
+}
+
+async function declinePickup(pickupId, reason) {
+    const [result] = await db.execute(
+        `UPDATE pickups
+         SET status = 'DECLINED',
+             decline_reason = ?
+         WHERE id = ?
+           AND status = 'PENDING'`,
+        [reason, pickupId]
+    );
+
+    return result.affectedRows;
+}
+
+async function updateStatus(pickupId, status, actualWeight = null) {
+    const [result] = await db.execute(
+        `UPDATE pickups
+         SET status = ?,
+             actual_weight = COALESCE(?, actual_weight)
+         WHERE id = ?`,
+        [status, actualWeight, pickupId]
+    );
+
+    return result.affectedRows;
+}
+
+module.exports = {
+    findByHousehold,
+    findPendingPickups,
+    findByCollectorAndDate,
+    findById,
+    acceptPickup,
+    declinePickup,
+    updateStatus
+};

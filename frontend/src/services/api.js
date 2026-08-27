@@ -56,5 +56,10 @@ export function get(path) {
 export function post(path, data) {
   return request(path, { method: 'POST', body: JSON.stringify(data) });
 }
-
-export default { request, get, post };
+export function patch(path, data) {
+  return request(path, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  });
+}
+export default { request, get, post,patch };

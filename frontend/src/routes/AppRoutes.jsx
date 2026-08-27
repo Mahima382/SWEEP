@@ -1,4 +1,6 @@
 import React from 'react';
+import CollectorPickupSchedule
+  from '../pages/CollectorPickupSchedule';
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import Home from '../pages/Home';
@@ -30,6 +32,7 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/household" element={<HouseholdDashboard />} />
         <Route path="/collector" element={<CollectorDashboard />} />
+        <Route path="/collector/pickups" element={<CollectorPickupSchedule />} />
         <Route path="/company" element={<CompanyDashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
