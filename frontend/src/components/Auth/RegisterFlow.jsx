@@ -130,9 +130,13 @@ TextField.propTypes = {
  * @param {string} props.accountType One of household | collector | global | company.
  * @param {Function} props.onComplete Called with the submitted account data.
  * @param {Function} props.onBack Returns to account type selection.
+ * @param {boolean} props.submitting Whether the account is currently being created.
+ * @param {string} props.submitError Server-side error message, if any.
  * @returns {JSX.Element} The registration form.
  */
-export default function RegisterFlow({ accountType, onComplete, onBack }) {
+export default function RegisterFlow({
+  accountType, onComplete, onBack, submitting, submitError,
+}) {
   const [form, setForm] = useState({
     fullName: '', email: '', mobile: '', password: '', confirmPassword: '',
   });
@@ -200,6 +204,15 @@ export default function RegisterFlow({ accountType, onComplete, onBack }) {
         <p style={{ margin: '0 0 24px', fontSize: 13.5, color: '#64748b' }}>
           You&apos;ll complete the rest of your profile after logging in.
         </p>
+
+        {submitError && (
+          <p style={{
+            margin: '0 0 16px', fontSize: 13, color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 12px',
+          }}
+          >
+            {submitError}
+          </p>
+        )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <TextField
@@ -295,6 +308,7 @@ export default function RegisterFlow({ accountType, onComplete, onBack }) {
           </button>
           <button
             type="submit"
+            disabled={submitting}
             style={{
               padding: '10px 28px',
               borderRadius: 9,
@@ -303,11 +317,12 @@ export default function RegisterFlow({ accountType, onComplete, onBack }) {
               color: '#fff',
               fontSize: 14,
               fontWeight: 700,
-              cursor: 'pointer',
+              cursor: submitting ? 'default' : 'pointer',
+              opacity: submitting ? 0.7 : 1,
               fontFamily: 'inherit',
             }}
           >
-            Create Account →
+            {submitting ? 'Creating Account…' : 'Create Account →'}
           </button>
         </div>
       </form>
@@ -322,4 +337,10 @@ RegisterFlow.propTypes = {
   onComplete: PropTypes.func.isRequired,
   /** Returns to account type selection. */
   onBack: PropTypes.func.isRequired,
+  /** Whether the account is currently being created. */
+  // eslint-disable-next-line react/require-default-props
+  submitting: PropTypes.bool,
+  /** Server-side error message, if any. */
+  // eslint-disable-next-line react/require-default-props
+  submitError: PropTypes.string,
 };

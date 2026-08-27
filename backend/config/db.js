@@ -1,25 +1,27 @@
 /**
- * MySQL connection pool (Model-layer database access).
+ * SQLite connection (Model-layer database access).
  *
- * Uses mysql2/promise. The pool is created lazily by mysql2 semantics:
- * no TCP connection is opened until the first query, so requiring this
- * module never crashes when MySQL is absent.
+ * Uses Node's built-in node:sqlite module (DatabaseSync) — no external
+ * driver dependency, no native build step. The schema is (re)applied on
+ * every boot via "CREATE TABLE IF NOT EXISTS", so first run and later
+ * runs both work unattended.
  *
- * Reads configuration from process.env:
- *   DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
+ * DB_PATH (optional): file path for the database file. Defaults to
+ * backend/database/sweep.db, or an in-memory database when NODE_ENV=test
+ * (Vitest sets this), so test runs never touch the on-disk database.
  */
 
-const mysql = require('mysql2/promise');
+const path = require('path');
+const fs = require('fs');
+const { DatabaseSync } = require('node:sqlite');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT || 3306),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'sweep',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+const DEFAULT_DB_PATH = path.join(__dirname, '../database/sweep.db');
+const DB_PATH = process.env.DB_PATH
+  || (process.env.NODE_ENV === 'test' ? ':memory:' : DEFAULT_DB_PATH);
 
-module.exports = pool;
+const db = new DatabaseSync(DB_PATH);
+
+const schema = fs.readFileSync(path.join(__dirname, '../database/schema.sql'), 'utf8');
+db.exec(schema);
+
+module.exports = db;

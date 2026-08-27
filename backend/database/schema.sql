@@ -1,5 +1,17 @@
--- SWEEP MySQL schema — TBD.
+-- SWEEP SQLite schema.
 -- Data stores from the agreed DFD: D1 Users, D2 Listings, D3 Pickups,
 -- D4 Orders, D5 Wallets, D6 Audit Logs, D7 Transactions.
--- Design the tables from FR-01..FR-12 in CLAUDE.md §5 before writing DDL here.
+-- Only D1 Users (FR-01/FR-02) is implemented so far; the rest are added
+-- alongside the FRs that need them.
 -- Note: no bidding/escrow tables — both are out of scope (locked decision).
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  role TEXT NOT NULL CHECK (role IN ('household', 'collector', 'global', 'company', 'admin')),
+  full_name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  mobile TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'pending_kyc', 'suspended', 'banned')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

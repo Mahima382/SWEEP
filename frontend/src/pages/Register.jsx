@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AccountTypeSelect from '../components/Auth/AccountTypeSelect';
 import RegisterFlow from '../components/Auth/RegisterFlow';
 import RegistrationComplete from '../components/Auth/RegistrationComplete';
+import { register as registerAccount } from '../services/authService';
 
 const SCREENS = { SELECT: 'select', FORM: 'form', COMPLETE: 'complete' };
 
@@ -18,13 +19,31 @@ function Register() {
   const navigate = useNavigate();
   const [screen, setScreen] = useState(SCREENS.SELECT);
   const [accountType, setAccountType] = useState(null);
+  const [submitError, setSubmitError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleRegister = async (formData) => {
+    setSubmitError('');
+    setSubmitting(true);
+    try {
+      const { confirmPassword, ...registrationData } = formData;
+      await registerAccount(registrationData);
+      setScreen(SCREENS.COMPLETE);
+    } catch (err) {
+      setSubmitError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (screen === SCREENS.FORM) {
     return (
       <RegisterFlow
         accountType={accountType}
         onBack={() => setScreen(SCREENS.SELECT)}
-        onComplete={() => setScreen(SCREENS.COMPLETE)}
+        onComplete={handleRegister}
+        submitting={submitting}
+        submitError={submitError}
       />
     );
   }

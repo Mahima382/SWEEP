@@ -7,6 +7,9 @@ node_modules/
 # Generated logs
 *.log
 
+# SQLite database file (generated from backend/database/schema.sql on boot)
+backend/database/*.db
+
 # Generated JSDoc output
 docs/
 

@@ -1,7 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render, screen, fireEvent, waitFor,
+} from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Register from './Register';
+import { register } from '../services/authService';
+
+vi.mock('../services/authService', () => ({
+  register: vi.fn(),
+}));
 
 /**
  * Renders the Register page inside a router with a stub /login route,
@@ -33,7 +40,16 @@ function fillForm(values) {
 }
 
 describe('Register page', () => {
-  it('walks through account type selection, the minimal form, and completion', () => {
+  beforeEach(() => {
+    register.mockReset();
+  });
+
+  it('walks through account type selection, the minimal form, and completion', async () => {
+    register.mockResolvedValue({
+      user: {
+        id: 1, role: 'household', fullName: 'Farhan Rahman', email: 'farhan@example.com',
+      },
+    });
     renderRegisterPage();
 
     fireEvent.click(screen.getByRole('button', { name: /register as household/i }));
@@ -48,10 +64,39 @@ describe('Register page', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /create account/i }));
 
-    expect(screen.getByRole('heading', { name: /account created/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /account created/i })).toBeInTheDocument();
+    });
+    expect(register).toHaveBeenCalledWith({
+      accountType: 'household',
+      fullName: 'Farhan Rahman',
+      email: 'farhan@example.com',
+      mobile: '01712345678',
+      password: 'Str0ng!Pass',
+    });
 
     fireEvent.click(screen.getByRole('button', { name: /go to login/i }));
     expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
+  });
+
+  it('shows the server error message when registration fails', async () => {
+    register.mockRejectedValue(new Error('An account with this email already exists.'));
+    renderRegisterPage();
+
+    fireEvent.click(screen.getByRole('button', { name: /register as household/i }));
+    fillForm({
+      fullName: 'Farhan Rahman',
+      email: 'farhan@example.com',
+      mobile: '01712345678',
+      password: 'Str0ng!Pass',
+      confirmPassword: 'Str0ng!Pass',
+    });
+    fireEvent.click(screen.getByRole('button', { name: /create account/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/an account with this email already exists/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByRole('heading', { name: /account created/i })).not.toBeInTheDocument();
   });
 
   it('blocks submission when the password is too weak or does not match', () => {
