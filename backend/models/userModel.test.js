@@ -71,3 +71,46 @@ describe('userModel.findByEmail', () => {
     expect(result).toBeNull();
   });
 });
+
+describe('userModel.registerFailedLogin', () => {
+  it('increments the failed attempt count without locking before the threshold', async () => {
+    const id = await userModel.create(baseUser);
+
+    const { attempts, lockedUntil } = await userModel.registerFailedLogin(id);
+
+    expect(attempts).toBe(1);
+    expect(lockedUntil).toBeNull();
+  });
+
+  it('locks the account once attempts reach LOCKOUT_THRESHOLD', async () => {
+    const id = await userModel.create(baseUser);
+
+    let result;
+    for (let i = 0; i < userModel.LOCKOUT_THRESHOLD; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      result = await userModel.registerFailedLogin(id);
+    }
+
+    expect(result.attempts).toBe(userModel.LOCKOUT_THRESHOLD);
+    expect(result.lockedUntil).toEqual(expect.any(String));
+
+    const row = db.prepare('SELECT locked_until FROM users WHERE id = ?').get(id);
+    expect(new Date(row.locked_until).getTime()).toBeGreaterThan(Date.now());
+  });
+});
+
+describe('userModel.clearFailedLogins', () => {
+  it('resets the failed attempt count and clears any lock', async () => {
+    const id = await userModel.create(baseUser);
+    for (let i = 0; i < userModel.LOCKOUT_THRESHOLD; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await userModel.registerFailedLogin(id);
+    }
+
+    await userModel.clearFailedLogins(id);
+
+    const row = db.prepare('SELECT failed_attempts, locked_until FROM users WHERE id = ?').get(id);
+    expect(row.failed_attempts).toBe(0);
+    expect(row.locked_until).toBeNull();
+  });
+});

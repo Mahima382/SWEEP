@@ -83,3 +83,105 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(409);
   });
 });
+
+describe('POST /api/auth/login', () => {
+  beforeEach(async () => {
+    await request(app).post('/api/auth/register').send(validPayload);
+  });
+
+  it('logs in with the correct email and password', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: validPayload.password,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.token).toEqual(expect.any(String));
+    expect(res.body.user).toMatchObject({
+      role: 'household', email: validPayload.email, status: 'active',
+    });
+    expect(res.body.user).not.toHaveProperty('password');
+    expect(res.body.user).not.toHaveProperty('passwordHash');
+  });
+
+  it('is case-insensitive on email', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: 'FARHAN@example.com', password: validPayload.password,
+    });
+
+    expect(res.status).toBe(200);
+  });
+
+  it('rejects an unknown email with a generic 401', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: 'nobody@example.com', password: validPayload.password,
+    });
+
+    expect(res.status).toBe(401);
+    expect(res.body.message).toMatch(/invalid email or password/i);
+  });
+
+  it('rejects the wrong password with a generic 401', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: 'WrongPass1!',
+    });
+
+    expect(res.status).toBe(401);
+    expect(res.body.message).toMatch(/invalid email or password/i);
+  });
+
+  it('rejects a missing password with 400', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email,
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects a non-string password with 400 instead of erroring', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: 12345678,
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('still blocks a locked account even with the correct password', async () => {
+    for (let i = 0; i < 5; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await request(app).post('/api/auth/login').send({
+        email: validPayload.email, password: 'WrongPass1!',
+      });
+    }
+
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: validPayload.password,
+    });
+
+    expect(res.status).toBe(423);
+  });
+
+  it('locks the account after 5 failed attempts', async () => {
+    for (let i = 0; i < 5; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await request(app).post('/api/auth/login').send({
+        email: validPayload.email, password: 'WrongPass1!',
+      });
+    }
+
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: validPayload.password,
+    });
+
+    expect(res.status).toBe(423);
+  });
+
+  it('blocks a suspended account with 403', async () => {
+    db.prepare("UPDATE users SET status = 'suspended' WHERE email = ?").run(validPayload.email);
+
+    const res = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: validPayload.password,
+    });
+
+    expect(res.status).toBe(403);
+  });
+});
