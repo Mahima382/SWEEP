@@ -35,4 +35,6 @@ router.post('/:userId/confirm', controller.handleConfirmAction);
 router.post('/:userId/kyc-verify', controller.kycVerifyUser);
 router.post('/:userId/kyc-reject', controller.kycRejectUser);
 
+router.post('/:userId/force-expire', controller.forceExpireSessions);
+
 module.exports = router;

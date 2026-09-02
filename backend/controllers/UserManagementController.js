@@ -350,6 +350,54 @@ async function kycRejectUser(req, res) {
   }
 }
 
+/**
+ * Force-expires all sessions for a specific user (FR-12).
+ * Admin only. Increments the token_version which invalidates existing JWTs.
+ *
+ * @param {object} req - Express request:
+ *   - req.params.userId - The user's id
+ * @param {object} res - Express response object.
+ * @returns {Promise<void>}
+ */
+async function forceExpireSessions(req, res) {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    const currentUser = req.user;
+
+    if (!currentUser || currentUser.role !== 'admin') {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const user = await findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Audited action
+    await withAudit(
+      {
+        actorId: currentUser.id,
+        actorRole: 'admin',
+        action: 'user.sessions_expired',
+        targetType: 'user',
+        targetId: userId,
+        details: {},
+      },
+      (conn) => conn.query(
+        'UPDATE users SET token_version = IFNULL(token_version, 0) + 1 WHERE id = ?',
+        [userId],
+      ),
+    );
+
+    return res.json({
+      message: 'All active sessions for this account have been expired.',
+      userId,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to force expire sessions' });
+  }
+}
+
 module.exports = {
   listUsers,
   getUser,
@@ -358,4 +406,5 @@ module.exports = {
   handleConfirmAction,
   kycVerifyUser,
   kycRejectUser,
+  forceExpireSessions,
 };

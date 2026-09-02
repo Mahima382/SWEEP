@@ -13,10 +13,39 @@ const db = require('../config/db');
  */
 async function findByEmail(email) {
   const [rows] = await db.query(
-    'SELECT id, name, email, password_hash, role, region, kyc_status, status, reason, joined FROM users WHERE email = ?',
+    'SELECT id, name, email, phone, nid, password_hash, role, region, kyc_status, status, reason, joined, token_version, login_attempts, lockout_until, reset_token, reset_expires, kyc_rejected_at FROM users WHERE email = ?',
     [email],
   );
   return rows.length > 0 ? rows[0] : null;
+}
+
+/**
+ * Finds a user by NID.
+ *
+ * @param {string} nid - The user's NID
+ * @returns {Promise<object|null>} The user row, or null if not found
+ */
+async function findByNid(nid) {
+  const [rows] = await db.query(
+    'SELECT id, name, email, phone, nid, password_hash, role, region, kyc_status, status, reason, joined, token_version, login_attempts, lockout_until, reset_token, reset_expires, kyc_rejected_at FROM users WHERE nid = ?',
+    [nid],
+  );
+  return rows.length > 0 ? rows[0] : null;
+}
+
+/**
+ * Checks if NID or Email is in a suspended/banned account (blacklist).
+ *
+ * @param {string} nid - NID to check
+ * @param {string} email - Email to check
+ * @returns {Promise<boolean>} True if blacklisted
+ */
+async function isBlacklisted(nid, email) {
+  const [rows] = await db.query(
+    'SELECT id FROM users WHERE (nid = ? OR email = ?) AND status IN (?, ?)',
+    [nid, email, 'suspended', 'banned'],
+  );
+  return rows.length > 0;
 }
 
 /**
@@ -29,6 +58,8 @@ async function create(user) {
   const params = [
     user.name,
     user.email,
+    user.phone,
+    user.nid,
     user.password_hash,
     user.role,
     user.region,
@@ -36,7 +67,7 @@ async function create(user) {
     user.status,
   ];
   const [result] = await db.query(
-    'INSERT INTO users (name, email, password_hash, role, region, kyc_status, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO users (name, email, phone, nid, password_hash, role, region, kyc_status, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
     params,
   );
   return { insertId: result.insertId };
@@ -50,7 +81,7 @@ async function create(user) {
  */
 async function findById(userId) {
   const [rows] = await db.query(
-    'SELECT id, name, email, password_hash, role, region, kyc_status, status, reason, joined FROM users WHERE id = ?',
+    'SELECT id, name, email, phone, nid, password_hash, role, region, kyc_status, status, reason, joined, token_version, login_attempts, lockout_until, reset_token, reset_expires, kyc_rejected_at FROM users WHERE id = ?',
     [userId],
   );
   return rows.length > 0 ? rows[0] : null;
@@ -100,6 +131,7 @@ async function findAll(filters = {}) {
  * @param {object} updates - Updates { status, reason }
  * @param {string} [updates.status] - New status (active, suspended, banned, pending)
  * @param {string} [updates.reason] - Reason for the status change (required for suspend/ban)
+ * @param {object} [connection] - Optional db connection for transactions
  * @returns {Promise<number>} The number of affected rows
  */
 async function updateStatus(userId, updates, connection) {
@@ -134,7 +166,8 @@ async function updateStatus(userId, updates, connection) {
  *
  * @param {number} userId - The user's id
  * @param {string} kycStatus - New KYC status (pending, verified, rejected)
- * @param {string} [updates.reason] - Reason for the KYC rejection (required if rejecting)
+ * @param {string} [reason] - Reason for the KYC rejection (required if rejecting)
+ * @param {object} [connection] - Optional db connection for transactions
  * @returns {Promise<number>} The number of affected rows
  */
 async function updateKycStatus(userId, kycStatus, reason, connection) {
@@ -144,6 +177,11 @@ async function updateKycStatus(userId, kycStatus, reason, connection) {
 
   sets.push('kyc_status = ?');
   params.push(kycStatus);
+
+  if (kycStatus === 'rejected') {
+    sets.push('kyc_rejected_at = ?');
+    params.push(new Date());
+  }
 
   if (reason && reason.trim().length > 0 && kycStatus === 'rejected') {
     sets.push('reason = ?');
@@ -174,12 +212,89 @@ async function isSuperAdmin(userId) {
   return user && user.role === 'admin';
 }
 
+/**
+ * Increments the user's token_version to invalidate all existing sessions.
+ *
+ * @param {number} userId - The user's id
+ * @returns {Promise<void>}
+ */
+async function incrementTokenVersion(userId) {
+  await db.query(
+    'UPDATE users SET token_version = IFNULL(token_version, 0) + 1 WHERE id = ?',
+    [userId],
+  );
+}
+
+/**
+ * Updates login attempts and lockout status.
+ *
+ * @param {number} userId - The user's id
+ * @param {number} attempts - Number of failed attempts
+ * @param {Date|null} lockoutUntil - Lockout expiration
+ * @returns {Promise<void>}
+ */
+async function updateLoginAttempts(userId, attempts, lockoutUntil) {
+  await db.query(
+    'UPDATE users SET login_attempts = ?, lockout_until = ? WHERE id = ?',
+    [attempts, lockoutUntil, userId],
+  );
+}
+
+/**
+ * Saves a reset token and its expiration.
+ *
+ * @param {number} userId - The user's id
+ * @param {string} hashedToken - Hashed token
+ * @param {Date} expires - Expiration time
+ * @returns {Promise<void>}
+ */
+async function saveResetToken(userId, hashedToken, expires) {
+  await db.query(
+    'UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?',
+    [hashedToken, expires, userId],
+  );
+}
+
+/**
+ * Clears the reset token.
+ *
+ * @param {number} userId - The user's id
+ * @returns {Promise<void>}
+ */
+async function clearResetToken(userId) {
+  await db.query(
+    'UPDATE users SET reset_token = NULL, reset_expires = NULL WHERE id = ?',
+    [userId],
+  );
+}
+
+/**
+ * Updates a user's password.
+ *
+ * @param {number} userId - The user's id
+ * @param {string} passwordHash - New hashed password
+ * @returns {Promise<void>}
+ */
+async function updatePassword(userId, passwordHash) {
+  await db.query(
+    'UPDATE users SET password_hash = ? WHERE id = ?',
+    [passwordHash, userId],
+  );
+}
+
 module.exports = {
   findByEmail,
+  findByNid,
+  isBlacklisted,
   findById,
   findAll,
   create,
   updateStatus,
   updateKycStatus,
   isSuperAdmin,
+  incrementTokenVersion,
+  updateLoginAttempts,
+  saveResetToken,
+  clearResetToken,
+  updatePassword,
 };
