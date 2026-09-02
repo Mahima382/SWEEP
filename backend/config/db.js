@@ -24,4 +24,18 @@ const db = new DatabaseSync(DB_PATH);
 const schema = fs.readFileSync(path.join(__dirname, '../database/schema.sql'), 'utf8');
 db.exec(schema);
 
+/**
+ * Adds columns introduced after a database file was first created.
+ * "CREATE TABLE IF NOT EXISTS" above only creates the table on first boot,
+ * so an on-disk sweep.db from before a schema change needs its new columns
+ * added explicitly (FR-02 login lockout columns, added post-FR-01).
+ */
+const existingColumns = new Set(db.prepare('PRAGMA table_info(users)').all().map((col) => col.name));
+if (!existingColumns.has('failed_attempts')) {
+  db.exec('ALTER TABLE users ADD COLUMN failed_attempts INTEGER NOT NULL DEFAULT 0');
+}
+if (!existingColumns.has('locked_until')) {
+  db.exec('ALTER TABLE users ADD COLUMN locked_until TEXT');
+}
+
 module.exports = db;

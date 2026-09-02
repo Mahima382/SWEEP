@@ -6,6 +6,19 @@
  */
 
 const BASE_URL = '/api';
+const TOKEN_STORAGE_KEY = 'sweep_token';
+
+/**
+ * Reads the JWT issued at login (FR-02) out of localStorage, if present.
+ * @returns {string|null} The stored token, or null when absent/unreadable.
+ */
+function getStoredToken() {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch (err) {
+    return null;
+  }
+}
 
 /**
  * Perform an HTTP request against the backend API and parse the JSON body.
@@ -16,8 +29,13 @@ const BASE_URL = '/api';
  *   a `status` property and the server message when available.
  */
 export async function request(path, options = {}) {
+  const token = getStoredToken();
   const response = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
     ...options,
   });
 

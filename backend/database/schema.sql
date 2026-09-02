@@ -13,5 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   mobile TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'pending_kyc', 'suspended', 'banned')),
+  failed_attempts INTEGER NOT NULL DEFAULT 0,
+  locked_until TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
