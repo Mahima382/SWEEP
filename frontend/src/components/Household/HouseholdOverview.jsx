@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Recycle, Wallet } from 'lucide-react';
 import useWasteListings from '../../hooks/useWasteListings';
+import useWallet from '../../hooks/useWallet';
 import { LISTING_STATUS, formatBdt } from '../../data/wasteListing';
 import ActionButton from './ActionButton';
 
@@ -12,6 +13,7 @@ import ActionButton from './ActionButton';
 function HouseholdOverview() {
   const navigate = useNavigate();
   const { listings, loading } = useWasteListings();
+  const { availableBdt, pendingBdt } = useWallet();
   const listed = listings.filter((item) => item.status === LISTING_STATUS.LISTED).length;
   const pickups = listings.filter(
     (item) => item.status === LISTING_STATUS.PICKUP_REQUESTED,
@@ -30,7 +32,7 @@ function HouseholdOverview() {
         List waste, request a pickup, and track what is waiting for a collector.
       </p>
 
-      <dl className="mt-8 grid grid-cols-2 gap-3 sm:max-w-lg">
+      <dl className="mt-8 grid grid-cols-2 gap-3 sm:max-w-2xl">
         <div className="rounded-2xl border border-mist bg-white px-4 py-4">
           <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-leaf">
             Open listings
@@ -42,6 +44,18 @@ function HouseholdOverview() {
             Pickup requested
           </dt>
           <dd className="mt-1 font-display text-3xl text-ink">{pickups}</dd>
+        </div>
+        <div className="rounded-2xl border border-mist bg-white px-4 py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-leaf">
+            Wallet pending
+          </dt>
+          <dd className="mt-1 font-display text-2xl text-ink">{formatBdt(pendingBdt)}</dd>
+        </div>
+        <div className="rounded-2xl border border-leaf/30 bg-lime/40 px-4 py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest">
+            Wallet available
+          </dt>
+          <dd className="mt-1 font-display text-2xl text-ink">{formatBdt(availableBdt)}</dd>
         </div>
       </dl>
 

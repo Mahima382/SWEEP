@@ -69,4 +69,10 @@ describe('HouseholdDashboard', () => {
     fireEvent.click(screen.getAllByRole('button', { name: /Add waste/i })[0]);
     expect(screen.getByRole('heading', { name: /Add waste/i })).toBeInTheDocument();
   });
+
+  it('renders the wallet page from the household shell', async () => {
+    renderHousehold('/household/wallet');
+    expect(screen.getByRole('heading', { name: /My Wallet/i })).toBeInTheDocument();
+    expect(await screen.findByText('TXN-7721')).toBeInTheDocument();
+  });
 });
