@@ -1,0 +1,198 @@
+/**
+ * Seed ledger for the household wallet API while MySQL (D5/D7) is empty.
+ * Totals match the FR-04 mockup: available 2850, pending 620, earned 8750.
+ */
+
+const SEED = [
+  {
+    id: 'TXN-7721',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 592,
+    category: 'Plastic',
+    reference: 'PH-1082 (Plastic)',
+    createdAt: '2026-08-23T10:00:00.000Z',
+  },
+  {
+    id: 'TXN-7718',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 408,
+    category: 'Plastic',
+    reference: 'PH-1079 (Plastic)',
+    createdAt: '2026-08-21T09:00:00.000Z',
+  },
+  {
+    id: 'WD-7700',
+    type: 'withdrawal',
+    status: 'completed',
+    amountBdt: 2000,
+    category: null,
+    reference: 'bKash ***123',
+    createdAt: '2026-08-18T14:00:00.000Z',
+  },
+  {
+    id: 'TXN-7694',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 400,
+    category: 'Plastic',
+    reference: 'PH-1071 (Plastic)',
+    createdAt: '2026-08-15T11:00:00.000Z',
+  },
+  {
+    id: 'TXN-7688',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 400,
+    category: 'Plastic',
+    reference: 'PH-1064 (Plastic)',
+    createdAt: '2026-08-10T08:30:00.000Z',
+  },
+  {
+    id: 'TXN-7672',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 214,
+    category: 'Paper',
+    reference: 'PH-1058 (Paper)',
+    createdAt: '2026-08-04T16:00:00.000Z',
+  },
+  {
+    id: 'TXN-7661',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 186,
+    category: 'Paper',
+    reference: 'PH-1049 (Paper)',
+    createdAt: '2026-07-28T12:00:00.000Z',
+  },
+  {
+    id: 'WD-7650',
+    type: 'withdrawal',
+    status: 'completed',
+    amountBdt: 1800,
+    category: null,
+    reference: 'Nagad ***456',
+    createdAt: '2026-07-25T13:00:00.000Z',
+  },
+  {
+    id: 'TXN-7648',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 720,
+    category: 'Metal',
+    reference: 'PH-1044 (Metal)',
+    createdAt: '2026-07-22T09:00:00.000Z',
+  },
+  {
+    id: 'TXN-7640',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 400,
+    category: 'Metal',
+    reference: 'PH-1038 (Metal)',
+    createdAt: '2026-07-18T15:00:00.000Z',
+  },
+  {
+    id: 'TXN-7631',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 380,
+    category: 'Metal',
+    reference: 'PH-1028 (Metal)',
+    createdAt: '2026-07-12T10:00:00.000Z',
+  },
+  {
+    id: 'TXN-7620',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 280,
+    category: 'Glass',
+    reference: 'PH-1019 (Glass)',
+    createdAt: '2026-07-06T11:00:00.000Z',
+  },
+  {
+    id: 'WD-7612',
+    type: 'withdrawal',
+    status: 'completed',
+    amountBdt: 1480,
+    category: null,
+    reference: 'Bank ***789',
+    createdAt: '2026-07-02T12:00:00.000Z',
+  },
+  {
+    id: 'TXN-7608',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 1800,
+    category: 'E-Waste',
+    reference: 'PH-1011 (E-Waste)',
+    createdAt: '2026-06-29T09:00:00.000Z',
+  },
+  {
+    id: 'TXN-7594',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 1500,
+    category: 'E-Waste',
+    reference: 'PH-1004 (E-Waste)',
+    createdAt: '2026-06-20T10:00:00.000Z',
+  },
+  {
+    id: 'TXN-7580',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 700,
+    category: 'E-Waste',
+    reference: 'PH-0991 (E-Waste)',
+    review: {
+      rating: 4,
+      comment: 'Pickup was on time.',
+      createdAt: '2026-06-13T14:00:00.000Z',
+    },
+    createdAt: '2026-06-12T14:00:00.000Z',
+  },
+  {
+    id: 'TXN-7566',
+    type: 'earning',
+    status: 'available',
+    amountBdt: 150,
+    category: 'Organic',
+    reference: 'PH-0978 (Organic)',
+    review: {
+      rating: 5,
+      comment: 'Friendly collector.',
+      createdAt: '2026-06-05T08:00:00.000Z',
+    },
+    createdAt: '2026-06-04T08:00:00.000Z',
+  },
+  {
+    id: 'TXN-7542',
+    type: 'earning',
+    status: 'pending',
+    amountBdt: 400,
+    category: 'Paper',
+    reference: 'PH-0962 (Paper)',
+    createdAt: '2026-05-28T09:00:00.000Z',
+  },
+  {
+    id: 'TXN-7530',
+    type: 'earning',
+    status: 'pending',
+    amountBdt: 220,
+    category: 'Glass',
+    reference: 'PH-0951 (Glass)',
+    createdAt: '2026-05-22T15:00:00.000Z',
+  },
+];
+
+/**
+ * Deep-clone the household demo ledger so callers cannot mutate the seed.
+ * @returns {object[]} Fresh transaction rows.
+ */
+function demoTransactions() {
+  return JSON.parse(JSON.stringify(SEED));
+}
+
+module.exports = { demoTransactions };

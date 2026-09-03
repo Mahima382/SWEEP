@@ -4,7 +4,11 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { getWallet } from '../services/walletService';
+import {
+  getWallet,
+  requestWithdrawal,
+  saveTransactionReview,
+} from '../services/walletService';
 import {
   chartCategoryTotals,
   completedPickupCount,
@@ -25,6 +29,8 @@ import {
  *   loading: boolean,
  *   error: (string|null),
  *   refresh: Function,
+ *   withdrawFunds: Function,
+ *   saveReview: Function,
  * }} Wallet state.
  */
 export default function useWallet() {
@@ -48,6 +54,18 @@ export default function useWallet() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  const withdrawFunds = useCallback(async (values) => {
+    const wallet = await requestWithdrawal(values);
+    setTransactions(wallet.transactions || []);
+    return wallet;
+  }, []);
+
+  const saveReview = useCallback(async (transactionId, values) => {
+    const wallet = await saveTransactionReview(transactionId, values);
+    setTransactions(wallet.transactions || []);
+    return wallet;
+  }, []);
 
   const summary = useMemo(() => summarizeWallet(transactions), [transactions]);
   const breakdown = useMemo(
@@ -74,5 +92,7 @@ export default function useWallet() {
     loading,
     error,
     refresh,
+    withdrawFunds,
+    saveReview,
   };
 }

@@ -1,13 +1,14 @@
 /**
  * Household wallet service (FR-04). Components call this module instead of
- * fetch. When GET /api/wallet is still 501, a local demo ledger is used.
+ * fetch. When the wallet API is still a stub, a local demo ledger is used.
  */
 
-import { get } from './api';
+import { get, post } from './api';
 import {
   WALLET_STORAGE_KEY,
   demoTransactions,
 } from '../data/wallet';
+import { applyReview, applyWithdrawal } from '../data/walletPayout';
 
 /**
  * Whether the wallet API is missing, stubbed, or unreachable.
@@ -92,4 +93,45 @@ export async function getWallet() {
   }
 }
 
-export default { getWallet };
+/**
+ * Withdraw available funds to bKash, Nagad, or a bank account (FR-04).
+ * @param {{amountBdt: number|string, method: string, account: string}} values Form.
+ * @returns {Promise<object>} Updated wallet payload.
+ */
+export async function requestWithdrawal(values) {
+  try {
+    return await post('/wallet/withdraw', values);
+  } catch (error) {
+    if (!isApiUnavailable(error)) {
+      throw error;
+    }
+    const current = localWallet();
+    const transactions = applyWithdrawal(current.transactions, values);
+    const updated = { transactions };
+    writeLocalWallet(updated);
+    return updated;
+  }
+}
+
+/**
+ * Save a 1–5 star review on a confirmed pickup earning (FR-04).
+ * @param {string} transactionId Earning id.
+ * @param {{rating: number, comment?: string}} values Review fields.
+ * @returns {Promise<object>} Updated wallet payload.
+ */
+export async function saveTransactionReview(transactionId, values) {
+  try {
+    return await post('/reviews', { transactionId, ...values });
+  } catch (error) {
+    if (!isApiUnavailable(error)) {
+      throw error;
+    }
+    const current = localWallet();
+    const transactions = applyReview(current.transactions, transactionId, values);
+    const updated = { transactions };
+    writeLocalWallet(updated);
+    return updated;
+  }
+}
+
+export default { getWallet, requestWithdrawal, saveTransactionReview };

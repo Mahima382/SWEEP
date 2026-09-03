@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Hourglass } from 'lucide-react';
 import useWallet from '../../hooks/useWallet';
 import { formatBdt } from '../../data/wallet';
+import { downloadWalletCsv, downloadWalletPdf } from '../../data/walletExport';
 import EarningsCategoryChart from './EarningsCategoryChart';
 import WalletTransactionTable from './WalletTransactionTable';
+import WithdrawFundsModal from './WithdrawFundsModal';
+import TransactionReviewModal from './TransactionReviewModal';
 
 /**
- * Household wallet: balances, category chart, and ledger (FR-04 segment 1).
- * Withdrawal is visual only until the next segment.
+ * Household wallet: balances, withdrawals, export, and reviews (FR-04).
  * @returns {JSX.Element} Wallet page.
  */
 function HouseholdWallet() {
@@ -20,11 +22,34 @@ function HouseholdWallet() {
     completedPickups,
     loading,
     error,
+    withdrawFunds,
+    saveReview,
   } = useWallet();
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState(null);
+  const [notice, setNotice] = useState('');
 
   const pickupLabel = completedPickups === 1
     ? 'Across 1 completed pickup'
     : `Across ${completedPickups} completed pickups`;
+
+  const handleWithdraw = async (values) => {
+    await withdrawFunds(values);
+    setWithdrawOpen(false);
+    setNotice(`Withdrawal of ${formatBdt(values.amountBdt)} is on the way.`);
+  };
+
+  const handleReview = async (transactionId, values) => {
+    await saveReview(transactionId, values);
+    setReviewTarget(null);
+    setNotice('Thanks — your pickup review was saved.');
+  };
+
+  const summary = {
+    pendingBdt,
+    availableBdt,
+    earnedBdt,
+  };
 
   return (
     <section>
@@ -39,7 +64,9 @@ function HouseholdWallet() {
         </div>
         <button
           type="button"
-          className="rounded-xl bg-forest px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-forest/20 transition hover:bg-leaf"
+          onClick={() => setWithdrawOpen(true)}
+          disabled={availableBdt <= 0}
+          className="rounded-xl bg-forest px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-forest/20 transition hover:bg-leaf disabled:opacity-50"
         >
           Withdraw Funds
         </button>
@@ -55,7 +82,9 @@ function HouseholdWallet() {
           </p>
           <button
             type="button"
-            className="mt-6 rounded-xl border-2 border-white/85 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+            onClick={() => setWithdrawOpen(true)}
+            disabled={availableBdt <= 0}
+            className="mt-6 rounded-xl border-2 border-white/85 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-50"
           >
             Withdraw Funds
           </button>
@@ -81,6 +110,12 @@ function HouseholdWallet() {
         </article>
       </div>
 
+      {notice ? (
+        <p className="mt-6 rounded-2xl bg-lime/50 px-4 py-3 text-sm text-forest" role="status">
+          {notice}
+        </p>
+      ) : null}
+
       {error ? (
         <p className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
           {error}
@@ -92,9 +127,30 @@ function HouseholdWallet() {
       ) : (
         <div className="mt-8 space-y-6">
           <EarningsCategoryChart rows={chartRows} />
-          <WalletTransactionTable transactions={transactions} />
+          <WalletTransactionTable
+            transactions={transactions}
+            onReview={setReviewTarget}
+            onExportCsv={() => downloadWalletCsv(transactions, summary)}
+            onExportPdf={() => downloadWalletPdf(transactions, summary)}
+          />
         </div>
       )}
+
+      {withdrawOpen ? (
+        <WithdrawFundsModal
+          availableBdt={availableBdt}
+          onClose={() => setWithdrawOpen(false)}
+          onSubmit={handleWithdraw}
+        />
+      ) : null}
+
+      {reviewTarget ? (
+        <TransactionReviewModal
+          transaction={reviewTarget}
+          onClose={() => setReviewTarget(null)}
+          onSubmit={handleReview}
+        />
+      ) : null}
     </section>
   );
 }

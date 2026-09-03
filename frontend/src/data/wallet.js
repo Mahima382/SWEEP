@@ -1,6 +1,7 @@
 /**
  * FR-04 household wallet helpers: pending vs available balances and
- * earnings breakdown. Withdrawal and export land in a later segment.
+ * earnings breakdown. Withdrawal, export, and reviews are in walletPayout
+ * and walletExport.
  */
 
 import { formatBdt } from './wasteListing';
@@ -188,6 +189,11 @@ export function demoTransactions() {
       amountBdt: 700,
       category: 'E-Waste',
       reference: 'PH-0991 (E-Waste)',
+      review: {
+        rating: 4,
+        comment: 'Pickup was on time.',
+        createdAt: '2026-06-13T14:00:00.000Z',
+      },
       createdAt: '2026-06-12T14:00:00.000Z',
     },
     {
@@ -197,6 +203,11 @@ export function demoTransactions() {
       amountBdt: 150,
       category: 'Organic',
       reference: 'PH-0978 (Organic)',
+      review: {
+        rating: 5,
+        comment: 'Friendly collector.',
+        createdAt: '2026-06-05T08:00:00.000Z',
+      },
       createdAt: '2026-06-04T08:00:00.000Z',
     },
     {

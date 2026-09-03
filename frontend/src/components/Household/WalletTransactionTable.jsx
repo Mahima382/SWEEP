@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Star } from 'lucide-react';
 import {
   TXN_STATUS,
   TXN_STATUS_LABELS,
@@ -8,6 +9,7 @@ import {
   formatBdt,
   formatTxnDate,
 } from '../../data/wallet';
+import { canReviewTransaction } from '../../data/walletPayout';
 
 /**
  * Pill styles for a wallet transaction status.
@@ -40,16 +42,64 @@ function statusDotClass(status) {
 }
 
 /**
+ * Compact star readout for a saved review.
+ * @param {object} props Component props.
+ * @param {number} props.rating Stars from 1 to 5.
+ * @returns {JSX.Element} Stars.
+ */
+function ReviewStars({ rating }) {
+  return (
+    <span className="inline-flex items-center gap-0.5 text-leaf" aria-label={`${rating} of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`h-3.5 w-3.5 ${star <= rating ? 'fill-leaf text-leaf' : 'text-mist'}`}
+          aria-hidden="true"
+        />
+      ))}
+    </span>
+  );
+}
+
+ReviewStars.propTypes = {
+  rating: PropTypes.number.isRequired,
+};
+
+/**
  * Household wallet ledger as a table (FR-04).
  * @param {object} props Component props.
  * @param {object[]} props.transactions Ledger rows.
+ * @param {Function} [props.onReview] Opens the review modal for an earning.
+ * @param {Function} [props.onExportCsv] Download CSV.
+ * @param {Function} [props.onExportPdf] Download PDF.
  * @returns {JSX.Element} History card.
  */
-function WalletTransactionTable({ transactions }) {
+function WalletTransactionTable({
+  transactions,
+  onReview,
+  onExportCsv,
+  onExportPdf,
+}) {
   return (
     <section className="overflow-hidden rounded-2xl border border-mist bg-white shadow-sm">
-      <div className="px-5 py-5 sm:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-5 sm:px-6">
         <h2 className="font-display text-xl text-ink">Transaction History</h2>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onExportCsv}
+            className="rounded-xl border-2 border-forest/30 bg-white px-3.5 py-1.5 text-sm font-semibold text-forest hover:bg-sand"
+          >
+            Export CSV
+          </button>
+          <button
+            type="button"
+            onClick={onExportPdf}
+            className="rounded-xl border-2 border-forest/30 bg-white px-3.5 py-1.5 text-sm font-semibold text-forest hover:bg-sand"
+          >
+            Export PDF
+          </button>
+        </div>
       </div>
 
       {transactions.length === 0 ? (
@@ -66,7 +116,8 @@ function WalletTransactionTable({ transactions }) {
                 <th className="px-3 py-3 font-semibold">Type</th>
                 <th className="px-3 py-3 font-semibold">Reference</th>
                 <th className="px-3 py-3 font-semibold">Amount</th>
-                <th className="px-5 py-3 font-semibold sm:px-6">Status</th>
+                <th className="px-3 py-3 font-semibold">Status</th>
+                <th className="px-5 py-3 font-semibold sm:px-6">Review</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +143,7 @@ function WalletTransactionTable({ transactions }) {
                     >
                       {amount}
                     </td>
-                    <td className="px-5 py-4 sm:px-6">
+                    <td className="px-3 py-4">
                       <span
                         className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${statusPillClass(row.status)}`}
                       >
@@ -102,6 +153,26 @@ function WalletTransactionTable({ transactions }) {
                         />
                         {statusLabel}
                       </span>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      {row.review ? (
+                        <ReviewStars rating={row.review.rating} />
+                      ) : null}
+                      {canReviewTransaction(row) ? (
+                        <button
+                          type="button"
+                          onClick={() => onReview(row)}
+                          className="text-sm font-semibold text-forest hover:underline"
+                        >
+                          Review
+                        </button>
+                      ) : null}
+                      {row.type === TXN_TYPE.EARNING && row.status === TXN_STATUS.PENDING ? (
+                        <span className="text-xs text-ink/45">After confirmation</span>
+                      ) : null}
+                      {isOut && !row.review ? (
+                        <span className="text-ink/35">—</span>
+                      ) : null}
                     </td>
                   </tr>
                 );
@@ -122,7 +193,14 @@ WalletTransactionTable.propTypes = {
     amountBdt: PropTypes.number.isRequired,
     reference: PropTypes.string,
     createdAt: PropTypes.string,
+    review: PropTypes.shape({
+      rating: PropTypes.number.isRequired,
+      comment: PropTypes.string,
+    }),
   })).isRequired,
+  onReview: PropTypes.func.isRequired,
+  onExportCsv: PropTypes.func.isRequired,
+  onExportPdf: PropTypes.func.isRequired,
 };
 
 export default WalletTransactionTable;
