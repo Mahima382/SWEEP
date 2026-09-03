@@ -4,7 +4,12 @@
  * response shape to something the admin views can render directly.
  */
 
-import { get, post, getText, request } from './api';
+import {
+  get,
+  post,
+  getText,
+  request,
+} from './api';
 
 /* ------------------------------------------------------------------ *
  * User Management + KYC (mounted at /api/admin/users)
@@ -62,6 +67,15 @@ export function kycVerifyUser(userId) {
  */
 export function kycRejectUser(userId, reason) {
   return post(`/admin/users/${userId}/kyc-reject`, { reason });
+}
+
+/**
+ * Force expire all active sessions for a user (FR-12).
+ * @param {number} userId - Target user id.
+ * @returns {Promise<object>} Backend result.
+ */
+export function forceExpireSessions(userId) {
+  return post(`/admin/users/${userId}/force-expire`, {});
 }
 
 /* ------------------------------------------------------------------ *
@@ -134,6 +148,11 @@ export function createPlan(payload) {
   return post('/admin/subscriptions/plans', payload);
 }
 
+/* small PUT helper (api.js only exposes request/get/post) */
+async function apiPut(path, data) {
+  return request(path, { method: 'PUT', body: JSON.stringify(data) });
+}
+
 /**
  * Update a subscription plan.
  * @param {number} planId - Plan id.
@@ -151,11 +170,6 @@ export function updatePlan(planId, updates) {
  */
 export function archivePlan(planId) {
   return post(`/admin/subscriptions/plans/${planId}/archive`, {});
-}
-
-/* small PUT helper (api.js only exposes request/get/post) */
-async function apiPut(path, data) {
-  return request(path, { method: 'PUT', body: JSON.stringify(data) });
 }
 
 /* ------------------------------------------------------------------ *
@@ -291,6 +305,7 @@ export default {
   reinstateUser,
   kycVerifyUser,
   kycRejectUser,
+  forceExpireSessions,
   listPriceVersions,
   createPriceVersion,
   listCommissionVersions,

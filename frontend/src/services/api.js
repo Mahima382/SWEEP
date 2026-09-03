@@ -50,6 +50,22 @@ export async function request(path, options = {}) {
     const message = (body && body.message) || `Request failed with status ${response.status}`;
     const error = new Error(message);
     error.status = response.status;
+
+    // FR-12 Session Expiry: if the server says the session is expired
+    // or the token is invalid, clear local auth and redirect to login.
+    if (response.status === 401 && path !== '/auth/login') {
+      try {
+        localStorage.removeItem('sweep_token');
+        localStorage.removeItem('sweep_user');
+      } catch (storageErr) {
+        /* ignore */
+      }
+      if (typeof window !== 'undefined'
+        && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+
     throw error;
   }
 
@@ -96,4 +112,9 @@ export async function getText(path) {
   return response.text();
 }
 
-export default { request, get, post, getText };
+export default {
+  request,
+  get,
+  post,
+  getText,
+};
