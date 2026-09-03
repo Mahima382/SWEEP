@@ -98,26 +98,19 @@
 
         
             
-<h4 class="name" id="AuthContext"><span class="type-signature">(constant) </span>AuthContext<span class="type-signature"> :React.Context.&lt;{user: (object|null), setUser: function(), logout: function()}></span></h4>
+<h4 class="name" id="DEFAULT_TRANSACTION_RATES"><span class="type-signature">(constant) </span>DEFAULT_TRANSACTION_RATES<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    Authentication context: holds the logged-in user for the whole app.Consume it via the useAuth() hook in src/hooks/useAuth.js.
+    Commission Service (FR-10 — Mobile Banking & Payment).
+
+Handles commission calculations, rate configurations, dynamic updates,
+and immutable historical rate snapshots.
 </div>
 
 
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">React.Context.&lt;{user: (object|null), setUser: function(), logout: function()}></span>
-
-
-        </li>
-    </ul>
 
 
 
@@ -152,7 +145,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_context_AuthContext.jsx.html">frontend/src/context/AuthContext.jsx</a>, <a href="frontend_src_context_AuthContext.jsx.html#line9">line 9</a>
+        <a href="backend_services_commissionService.js.html">backend/services/commissionService.js</a>, <a href="backend_services_commissionService.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -170,13 +163,17 @@
 
         
             
-<h4 class="name" id="BASE_URL"><span class="type-signature">(constant) </span>BASE_URL<span class="type-signature"></span></h4>
+<h4 class="name" id="LedgerService"><span class="type-signature">(constant) </span>LedgerService<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    Tiny fetch wrapper for the SWEEP backend REST API.MVC boundary: the View NEVER talks to MySQL — every server call in thefrontend must go through this module (proxied to http://localhost:5000by vite.config.js in development).
+    Payment Service (FR-10 — Mobile Banking & Payment).
+
+Handles payment lifecycle, wallet credits/debits, idempotency,
+atomic transactions, role-based workflows, gateway timeout/retries,
+and notification triggers.
 </div>
 
 
@@ -214,7 +211,72 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_services_api.js.html">frontend/src/services/api.js</a>, <a href="frontend_src_services_api.js.html#line8">line 8</a>
+        <a href="backend_services_paymentService.js.html">backend/services/paymentService.js</a>, <a href="backend_services_paymentService.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="MIN_PAYOUT_THRESHOLD"><span class="type-signature">(constant) </span>MIN_PAYOUT_THRESHOLD<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Payout Service (FR-10 — Mobile Banking & Payment).
+
+Handles payout validations, minimum thresholds, verified account verification,
+status tracking, and channel routing.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_services_payoutService.js.html">backend/services/payoutService.js</a>, <a href="backend_services_payoutService.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -356,26 +418,19 @@
 
         
             
-<h4 class="name" id="ROLES"><span class="type-signature">(constant) </span>ROLES<span class="type-signature"> :Object</span></h4>
+<h4 class="name" id="PaymentService"><span class="type-signature">(constant) </span>PaymentService<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    User role identifiers used for role-based routing and RBAC checks.
+    Payment Controller (FR-10 — Mobile Banking & Payment).
+
+Handles HTTP requests for wallet top-ups, payouts, gateway webhooks,
+payment tracking, immutable ledger queries, and role-based payment flows.
 </div>
 
 
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object</span>
-
-
-        </li>
-    </ul>
 
 
 
@@ -410,79 +465,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_utils_constants.js.html">frontend/src/utils/constants.js</a>, <a href="frontend_src_utils_constants.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="WASTE_CATEGORIES"><span class="type-signature">(constant) </span>WASTE_CATEGORIES<span class="type-signature"> :Array.&lt;string></span></h4>
-
-
-
-
-<div class="description">
-    The eight waste categories from the SRS (spec §5).Note: E-waste is licence-gated — only visible/orderable by companiesholding an e-waste handling licence.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Array.&lt;string></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_utils_constants.js.html">frontend/src/utils/constants.js</a>, <a href="frontend_src_utils_constants.js.html#line11">line 11</a>
+        <a href="backend_controllers_paymentController.js.html">backend/controllers/paymentController.js</a>, <a href="backend_controllers_paymentController.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -572,13 +555,17 @@
 
         
             
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
+<h4 class="name" id="commissionService"><span class="type-signature"></span>commissionService<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    Admin routes (FR-11). Mounted at /api/admin.
+    Unit tests for CommissionService (FR-10 — Mobile Banking & Payment).
+
+Strict TDD RED Phase: Tests commission calculations and policies.
+Covers:
+- Test Group 3: Commission (Criteria 13-19)
 </div>
 
 
@@ -616,7 +603,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_admin.routes.js.html">backend/routes/admin.routes.js</a>, <a href="backend_routes_admin.routes.js.html#line5">line 5</a>
+        <a href="backend_tests_unit_commissionService.test.js.html">backend/tests/unit/commissionService.test.js</a>, <a href="backend_tests_unit_commissionService.test.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -640,7 +627,10 @@
 
 
 <div class="description">
-    Auth routes (FR-01, FR-02). Mounted at /api/auth.
+    Payment Routes (FR-10 — Mobile Banking & Payment).
+
+REST API routes for wallet top-ups, payouts, webhooks,
+payment tracking, immutable ledger, and role-based payment flows.
 </div>
 
 
@@ -678,379 +668,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_auth.routes.js.html">backend/routes/auth.routes.js</a>, <a href="backend_routes_auth.routes.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Notification routes (FR-09). Mounted at /api/notifications.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_notification.routes.js.html">backend/routes/notification.routes.js</a>, <a href="backend_routes_notification.routes.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Payment routes (FR-10). Mounted at /api/payments.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_payment.routes.js.html">backend/routes/payment.routes.js</a>, <a href="backend_routes_payment.routes.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Review routes (FR-04). Mounted at /api/reviews.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_review.routes.js.html">backend/routes/review.routes.js</a>, <a href="backend_routes_review.routes.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    User routes (FR-12). Mounted at /api/users.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_user.routes.js.html">backend/routes/user.routes.js</a>, <a href="backend_routes_user.routes.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Wallet routes (FR-04, FR-06). Mounted at /api/wallet.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_wallet.routes.js.html">backend/routes/wallet.routes.js</a>, <a href="backend_routes_wallet.routes.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="express"><span class="type-signature">(constant) </span>express<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Waste routes (FR-03, FR-05). Mounted at /api/waste.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_routes_waste.routes.js.html">backend/routes/waste.routes.js</a>, <a href="backend_routes_waste.routes.js.html#line5">line 5</a>
+        <a href="backend_routes_paymentRoutes.js.html">backend/routes/paymentRoutes.js</a>, <a href="backend_routes_paymentRoutes.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -1130,6 +748,72 @@
 
         
             
+<h4 class="name" id="ledgerService"><span class="type-signature"></span>ledgerService<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Unit tests for LedgerService (FR-10 — Mobile Banking & Payment).
+
+Strict TDD RED Phase: Tests immutable financial ledger integrity and structure.
+Covers:
+- Test Group 4: Ledger (Criteria 20-24)
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_tests_unit_ledgerService.test.js.html">backend/tests/unit/ledgerService.test.js</a>, <a href="backend_tests_unit_ledgerService.test.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="mysql"><span class="type-signature">(constant) </span>mysql<span class="type-signature"></span></h4>
 
 
@@ -1192,6 +876,146 @@
 
         
             
+<h4 class="name" id="paymentService"><span class="type-signature"></span>paymentService<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Unit tests for PaymentService (FR-10 — Mobile Banking & Payment).
+
+Strict TDD RED Phase: Tests business logic in isolation.
+Covers:
+- Test Group 1: Wallet Top-Up (Criteria 1-7)
+- Test Group 2: Payment Status Tracking (Criteria 8-12)
+- Test Group 7: Gateway Failure & Retry Handling (Criteria 36-40)
+- Test Group 9: Concurrent Debit & Overdraft Protection (Criteria 46-49)
+- Test Group 10: Role-Based Payment Flows (Criteria 50-53)
+- Test Group 11: Notification Integration Contract
+- Test Group 12: Idempotency Enforcement (Criteria 54-56)
+- Test Group 13: Error Handling & Atomic Rollback (Criteria 57-63)
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_tests_unit_paymentService.test.js.html">backend/tests/unit/paymentService.test.js</a>, <a href="backend_tests_unit_paymentService.test.js.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="payoutService"><span class="type-signature"></span>payoutService<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Unit tests for PayoutService (FR-10 — Mobile Banking & Payment).
+
+Strict TDD RED Phase: Tests payout validations, thresholds, and channel support.
+Covers:
+- Test Group 5: Payout (Criteria 25-31)
+- Test Group 6: Payment Channels (Criteria 32-35)
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_tests_unit_payoutService.test.js.html">backend/tests/unit/payoutService.test.js</a>, <a href="backend_tests_unit_payoutService.test.js.html#line11">line 11</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="request"><span class="type-signature">(constant) </span>request<span class="type-signature"></span></h4>
 
 
@@ -1237,6 +1061,143 @@
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="backend_app.test.js.html">backend/app.test.js</a>, <a href="backend_app.test.js.html#line5">line 5</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="request"><span class="type-signature">(constant) </span>request<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Integration tests for Payment Routes (FR-10 — Mobile Banking & Payment).
+
+Strict TDD RED Phase: Tests REST API endpoints using Supertest against the Express app.
+Covers:
+- Top-Up API Endpoints
+- Payout API Endpoints & Thresholds
+- Gateway Webhook Callbacks & Security
+- Status Tracking & Ledger Endpoints
+- Role-Based Workflow API Endpoints
+- Auth & RBAC Protections
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_tests_integration_payment.routes.test.js.html">backend/tests/integration/payment.routes.test.js</a>, <a href="backend_tests_integration_payment.routes.test.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="webhookService"><span class="type-signature"></span>webhookService<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Unit tests for WebhookService (FR-10 — Mobile Banking & Payment).
+
+Strict TDD RED Phase: Tests cryptographic signature verification & webhook idempotency.
+Covers:
+- Test Group 8: Webhook Security (Criteria 41-45)
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="backend_tests_unit_webhookService.test.js.html">backend/tests/unit/webhookService.test.js</a>, <a href="backend_tests_unit_webhookService.test.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -1456,214 +1417,6 @@
         
 <div class="param-desc">
     The application routes.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">JSX.Element</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="AuthProvider"><span class="type-signature"></span>AuthProvider<span class="signature">(props)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Provider wrapping the app (see App.jsx) that owns the user state.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>props</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Component props.
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>children</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">React.ReactNode</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Subtree that can read the context.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_context_AuthContext.jsx.html">frontend/src/context/AuthContext.jsx</a>, <a href="frontend_src_context_AuthContext.jsx.html#line21">line 21</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The context provider.
 </div>
 
 
@@ -1912,116 +1665,6 @@
     
 
     
-    <h4 class="name" id="Home"><span class="type-signature"></span>Home<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Landing page for SWEEP.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_pages_Home.jsx.html">frontend/src/pages/Home.jsx</a>, <a href="frontend_src_pages_Home.jsx.html#line7">line 7</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The home page.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">JSX.Element</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="HouseholdDashboard"><span class="type-signature"></span>HouseholdDashboard<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
@@ -2132,116 +1775,6 @@
     
 
     
-    <h4 class="name" id="Login"><span class="type-signature"></span>Login<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Login page stub (FR-02). Form and role-based redirect to be implemented.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_pages_Login.jsx.html">frontend/src/pages/Login.jsx</a>, <a href="frontend_src_pages_Login.jsx.html#line7">line 7</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The login page.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">JSX.Element</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="MainLayout"><span class="type-signature"></span>MainLayout<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
@@ -2324,226 +1857,6 @@
         
 <div class="param-desc">
     The main layout shell.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">JSX.Element</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="NotFound"><span class="type-signature"></span>NotFound<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    404 page for unmatched routes.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_pages_NotFound.jsx.html">frontend/src/pages/NotFound.jsx</a>, <a href="frontend_src_pages_NotFound.jsx.html#line8">line 8</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The not-found page.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">JSX.Element</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="Register"><span class="type-signature"></span>Register<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Registration page stub (FR-01). Will branch into the fourrole-specific registration flows.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_pages_Register.jsx.html">frontend/src/pages/Register.jsx</a>, <a href="frontend_src_pages_Register.jsx.html#line8">line 8</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The registration page.
 </div>
 
 
@@ -2932,7 +2245,7 @@
     
 
     
-    <h4 class="name" id="create"><span class="type-signature">(async) </span>create<span class="signature">(user)</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
+    <h4 class="name" id="generateTestToken"><span class="type-signature"></span>generateTestToken<span class="signature">(payload)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
@@ -2940,7 +2253,7 @@
 
 
 <div class="description">
-    Creates a new user row.
+    Helper to generate JWT token for test requests.
 </div>
 
 
@@ -2976,7 +2289,7 @@
 
         <tr>
             
-                <td class="name"><code>user</code></td>
+                <td class="name"><code>payload</code></td>
             
 
             <td class="type">
@@ -2992,7 +2305,7 @@
 
             
 
-            <td class="description last">User fields (role, name, email, passwordHash, nid, ...).</td>
+            <td class="description last">Token payload (e.g. { id, role }).</td>
         </tr>
 
     
@@ -3033,7 +2346,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_userModel.js.html">backend/models/userModel.js</a>, <a href="backend_models_userModel.js.html#line27">line 27</a>
+        <a href="backend_tests_integration_payment.routes.test.js.html">backend/tests/integration/payment.routes.test.js</a>, <a href="backend_tests_integration_payment.routes.test.js.html#line26">line 26</a>
     </li></ul></dd>
     
 
@@ -3062,7 +2375,7 @@
 
         
 <div class="param-desc">
-    The inserted user's id.
+    Signed JWT Bearer token.
 </div>
 
 
@@ -3073,2188 +2386,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;number></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="create"><span class="type-signature">(async) </span>create<span class="signature">(listing)</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Creates a new waste listing.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>listing</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Listing fields (category, weight, photos, suggestedPrice, ...).</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_wasteModel.js.html">backend/models/wasteModel.js</a>, <a href="backend_models_wasteModel.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The inserted listing's id.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;number></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findByCompany"><span class="type-signature">(async) </span>findByCompany<span class="signature">(companyId)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;object>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Finds orders placed by a company.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>companyId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The company user's id.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_orderModel.js.html">backend/models/orderModel.js</a>, <a href="backend_models_orderModel.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The company's orders.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;Array.&lt;object>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findByEmail"><span class="type-signature">(async) </span>findByEmail<span class="signature">(email)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|null)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Finds a user by email.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
 <span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The user's email address.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_userModel.js.html">backend/models/userModel.js</a>, <a href="backend_models_userModel.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The user row, or null if not found.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(object|null)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findByHousehold"><span class="type-signature">(async) </span>findByHousehold<span class="signature">(householdId)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;object>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Finds waste listings for a household.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>householdId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The household user's id.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_wasteModel.js.html">backend/models/wasteModel.js</a>, <a href="backend_models_wasteModel.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The household's listings.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;Array.&lt;object>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findByUser"><span class="type-signature">(async) </span>findByUser<span class="signature">(userId)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|null)>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Fetches a user's wallet with pending and available balances.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>userId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The wallet owner's user id.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_walletModel.js.html">backend/models/walletModel.js</a>, <a href="backend_models_walletModel.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The wallet row, or null if not found.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;(object|null)></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findByWallet"><span class="type-signature">(async) </span>findByWallet<span class="signature">(walletId)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;object>>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Finds transactions for a wallet.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>walletId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The wallet's id.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_models_transactionModel.js.html">backend/models/transactionModel.js</a>, <a href="backend_models_transactionModel.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The wallet's transaction history.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;Array.&lt;object>></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(path)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Send a GET request to the backend API.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">API path, e.g. '/waste/listings'.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_services_api.js.html">frontend/src/services/api.js</a>, <a href="frontend_src_services_api.js.html#line46">line 46</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The parsed JSON response body.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;object></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getListings"><span class="type-signature"></span>getListings<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for listing waste listings / creating a listing withcategory, photos (max 5), suggested price, and scheduling (FR-03).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_wasteController.js.html">backend/controllers/wasteController.js</a>, <a href="backend_controllers_wasteController.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getPickups"><span class="type-signature"></span>getPickups<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for pickup management: accept/decline, weight recording,proof photos, bulk lot aggregation (FR-05).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_wasteController.js.html">backend/controllers/wasteController.js</a>, <a href="backend_controllers_wasteController.js.html#line26">line 26</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getProfile"><span class="type-signature"></span>getProfile<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for fetching the authenticated user's profile (FR-12).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_userController.js.html">backend/controllers/userController.js</a>, <a href="backend_controllers_userController.js.html#line13">line 13</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getReviews"><span class="type-signature"></span>getReviews<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for listing reviews on a transaction (FR-04).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_reviewController.js.html">backend/controllers/reviewController.js</a>, <a href="backend_controllers_reviewController.js.html#line13">line 13</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getUsers"><span class="type-signature"></span>getUsers<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for the admin user-management listing (FR-11).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_adminController.js.html">backend/controllers/adminController.js</a>, <a href="backend_controllers_adminController.js.html#line13">line 13</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getWallet"><span class="type-signature"></span>getWallet<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for wallet balance/breakdown: pending vs available,withdrawal, CSV/PDF export (FR-04, FR-06).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_walletController.js.html">backend/controllers/walletController.js</a>, <a href="backend_controllers_walletController.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
 
 
     </dd>
@@ -5355,1294 +2487,6 @@
 
 
         
-            
-
-    
-
-    
-    <h4 class="name" id="initiatePayment"><span class="type-signature"></span>initiatePayment<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for initiating a payment with auto commission andidempotency key handling (FR-10).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_paymentController.js.html">backend/controllers/paymentController.js</a>, <a href="backend_controllers_paymentController.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(email, password)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Log a user in with email and password.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">User's email address.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">User's password.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_services_authService.js.html">frontend/src/services/authService.js</a>, <a href="frontend_src_services_authService.js.html#line15">line 15</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Backend response, expected `{ token, user }`.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;object></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for login with role-based routing and 5-attempt lockout (FR-02).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_authController.js.html">backend/controllers/authController.js</a>, <a href="backend_controllers_authController.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="post"><span class="type-signature"></span>post<span class="signature">(path, data)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Send a POST request with a JSON payload to the backend API.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">API path, e.g. '/auth/login'.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Payload to serialise as the JSON body.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_services_api.js.html">frontend/src/services/api.js</a>, <a href="frontend_src_services_api.js.html#line56">line 56</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The parsed JSON response body.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;object></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="register"><span class="type-signature"></span>register<span class="signature">(registrationData)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Register a new account for any of the four roles.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>registrationData</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Role-specific registration payload  (e.g. `{ role, name, email, password, nid, ... }`).</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_services_authService.js.html">frontend/src/services/authService.js</a>, <a href="frontend_src_services_authService.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Backend response, expected `{ user }`.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;object></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="register"><span class="type-signature"></span>register<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {void}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Placeholder for user registration (FR-01: Household, Local Collector,Global Collector, Company sub-flows).
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express request object.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Express response object.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="backend_controllers_authController.js.html">backend/controllers/authController.js</a>, <a href="backend_controllers_authController.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">void</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="request"><span class="type-signature"></span>request<span class="signature">(path, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Perform an HTTP request against the backend API and parse the JSON body.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">API path beginning with '/', e.g. '/auth/login'.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Fetch options (method, headers, body...).</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="frontend_src_services_api.js.html">frontend/src/services/api.js</a>, <a href="frontend_src_services_api.js.html#line18">line 18</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        When the response status is not ok; the error carries  a `status` property and the server message when available.
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The parsed JSON response body.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;object></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
     
 
     
@@ -6658,13 +2502,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AppEventBus.html">AppEventBus</a></li><li><a href="InAppChannel.html">InAppChannel</a></li><li><a href="NotificationChannel.html">NotificationChannel</a></li><li><a href="NotificationDispatcher.html">NotificationDispatcher</a></li><li><a href="NotificationPreference.html">NotificationPreference</a></li><li><a href="NotificationService.html">NotificationService</a></li><li><a href="PickupForwardingScheduler.html">PickupForwardingScheduler</a></li><li><a href="PushChannel.html">PushChannel</a></li><li><a href="PushToken.html">PushToken</a></li><li><a href="SocketManager.html">SocketManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AdminDashboard">AdminDashboard</a></li><li><a href="global.html#AppRoutes">AppRoutes</a></li><li><a href="global.html#AuthContext">AuthContext</a></li><li><a href="global.html#AuthProvider">AuthProvider</a></li><li><a href="global.html#BASE_URL">BASE_URL</a></li><li><a href="global.html#CollectorDashboard">CollectorDashboard</a></li><li><a href="global.html#CompanyDashboard">CompanyDashboard</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#HouseholdDashboard">HouseholdDashboard</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#NOTIFICATION_CATEGORIES">NOTIFICATION_CATEGORIES</a></li><li><a href="global.html#NOTIFICATION_RULES">NOTIFICATION_RULES</a></li><li><a href="global.html#NotFound">NotFound</a></li><li><a href="global.html#ROLES">ROLES</a></li><li><a href="global.html#Register">Register</a></li><li><a href="global.html#WASTE_CATEGORIES">WASTE_CATEGORIES</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#findByCompany">findByCompany</a></li><li><a href="global.html#findByEmail">findByEmail</a></li><li><a href="global.html#findByHousehold">findByHousehold</a></li><li><a href="global.html#findByUser">findByUser</a></li><li><a href="global.html#findByWallet">findByWallet</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getListings">getListings</a></li><li><a href="global.html#getPickups">getPickups</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getReviews">getReviews</a></li><li><a href="global.html#getUsers">getUsers</a></li><li><a href="global.html#getWallet">getWallet</a></li><li><a href="global.html#initNotificationEventHandlers">initNotificationEventHandlers</a></li><li><a href="global.html#initiatePayment">initiatePayment</a></li><li><a href="global.html#jwt">jwt</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#mysql">mysql</a></li><li><a href="global.html#post">post</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#request">request</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AppEventBus.html">AppEventBus</a></li><li><a href="InAppChannel.html">InAppChannel</a></li><li><a href="global.html#LedgerService">LedgerService</a></li><li><a href="NotificationChannel.html">NotificationChannel</a></li><li><a href="NotificationDispatcher.html">NotificationDispatcher</a></li><li><a href="NotificationPreference.html">NotificationPreference</a></li><li><a href="NotificationService.html">NotificationService</a></li><li><a href="PickupForwardingScheduler.html">PickupForwardingScheduler</a></li><li><a href="PushChannel.html">PushChannel</a></li><li><a href="PushToken.html">PushToken</a></li><li><a href="SocketManager.html">SocketManager</a></li><li><a href="WebhookService.html">WebhookService</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AdminDashboard">AdminDashboard</a></li><li><a href="global.html#AppRoutes">AppRoutes</a></li><li><a href="global.html#CollectorDashboard">CollectorDashboard</a></li><li><a href="global.html#CompanyDashboard">CompanyDashboard</a></li><li><a href="global.html#DEFAULT_TRANSACTION_RATES">DEFAULT_TRANSACTION_RATES</a></li><li><a href="global.html#HouseholdDashboard">HouseholdDashboard</a></li><li><a href="global.html#MIN_PAYOUT_THRESHOLD">MIN_PAYOUT_THRESHOLD</a></li><li><a href="global.html#MainLayout">MainLayout</a></li><li><a href="global.html#NOTIFICATION_CATEGORIES">NOTIFICATION_CATEGORIES</a></li><li><a href="global.html#NOTIFICATION_RULES">NOTIFICATION_RULES</a></li><li><a href="global.html#PaymentService">PaymentService</a></li><li><a href="global.html#WASTE_CATEGORIES">WASTE_CATEGORIES</a></li><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#commissionService">commissionService</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#generateTestToken">generateTestToken</a></li><li><a href="global.html#initNotificationEventHandlers">initNotificationEventHandlers</a></li><li><a href="global.html#jwt">jwt</a></li><li><a href="global.html#ledgerService">ledgerService</a></li><li><a href="global.html#mysql">mysql</a></li><li><a href="global.html#paymentService">paymentService</a></li><li><a href="global.html#payoutService">payoutService</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#webhookService">webhookService</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 27 2026 22:51:10 GMT+0600 (Bangladesh Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Sep 03 2026 22:49:22 GMT+0600 (Bangladesh Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

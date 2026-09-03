@@ -6,10 +6,9 @@ const notificationController = require('../controllers/notificationController');
 const router = express.Router();
 
 /*
- * Replace this import with the authentication
- * middleware already used by your project.
+ * Authentication middleware used by the project.
  */
-const authMiddleware = require('../middleware/auth');
+const { authenticate: authMiddleware } = require('../middleware/auth');
 
 router.get(
   '/',
