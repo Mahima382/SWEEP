@@ -185,3 +185,131 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(403);
   });
 });
+
+describe('POST /api/auth/forgot-password', () => {
+  beforeEach(async () => {
+    await request(app).post('/api/auth/register').send(validPayload);
+  });
+
+  it('returns a reset token for a registered email', async () => {
+    const res = await request(app).post('/api/auth/forgot-password').send({
+      email: validPayload.email,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.resetToken).toEqual(expect.any(String));
+    expect(res.body.resetTokenExpiresAt).toEqual(expect.any(String));
+  });
+
+  it('is case-insensitive on email', async () => {
+    const res = await request(app).post('/api/auth/forgot-password').send({
+      email: 'FARHAN@example.com',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.resetToken).toEqual(expect.any(String));
+  });
+
+  it('responds with the same generic message and no token for an unknown email, to avoid leaking registered emails', async () => {
+    const res = await request(app).post('/api/auth/forgot-password').send({
+      email: 'nobody@example.com',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/if an account exists/i);
+    expect(res.body.resetToken).toBeUndefined();
+  });
+
+  it('rejects an invalid email with 400', async () => {
+    const res = await request(app).post('/api/auth/forgot-password').send({
+      email: 'not-an-email',
+    });
+
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('POST /api/auth/reset-password', () => {
+  let resetToken;
+
+  beforeEach(async () => {
+    await request(app).post('/api/auth/register').send(validPayload);
+    const res = await request(app).post('/api/auth/forgot-password').send({
+      email: validPayload.email,
+    });
+    resetToken = res.body.resetToken;
+  });
+
+  it('resets the password and allows logging in with the new password', async () => {
+    const res = await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'NewStr0ng!Pass',
+    });
+
+    expect(res.status).toBe(200);
+
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: 'NewStr0ng!Pass',
+    });
+    expect(loginRes.status).toBe(200);
+  });
+
+  it('rejects the old password after a reset', async () => {
+    await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'NewStr0ng!Pass',
+    });
+
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: validPayload.password,
+    });
+    expect(loginRes.status).toBe(401);
+  });
+
+  it('rejects an unknown or already-used token', async () => {
+    await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'NewStr0ng!Pass',
+    });
+
+    const res = await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'AnotherStr0ng!Pass',
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects an expired token', async () => {
+    db.prepare("UPDATE users SET reset_token_expires = '2000-01-01T00:00:00.000Z' WHERE email = ?")
+      .run(validPayload.email);
+
+    const res = await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'NewStr0ng!Pass',
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects a weak new password', async () => {
+    const res = await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'weak',
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('clears a login lockout as part of a successful reset', async () => {
+    for (let i = 0; i < 5; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await request(app).post('/api/auth/login').send({
+        email: validPayload.email, password: 'WrongPass1!',
+      });
+    }
+
+    await request(app).post('/api/auth/reset-password').send({
+      token: resetToken, password: 'NewStr0ng!Pass',
+    });
+
+    const loginRes = await request(app).post('/api/auth/login').send({
+      email: validPayload.email, password: 'NewStr0ng!Pass',
+    });
+    expect(loginRes.status).toBe(200);
+  });
+});

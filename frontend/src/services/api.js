@@ -25,8 +25,9 @@ function getStoredToken() {
  * @param {string} path API path beginning with '/', e.g. '/auth/login'.
  * @param {object} [options] Fetch options (method, headers, body...).
  * @returns {Promise<object>} The parsed JSON response body.
- * @throws {Error} When the response status is not ok; the error carries
- *   a `status` property and the server message when available.
+ * @throws {Error} When the response status is not ok; the error carries a
+ *   `status` property, the server message when available, and an `errors`
+ *   property with any field-level validation map the server returned.
  */
 export async function request(path, options = {}) {
   const token = getStoredToken();
@@ -50,6 +51,7 @@ export async function request(path, options = {}) {
     const message = (body && body.message) || `Request failed with status ${response.status}`;
     const error = new Error(message);
     error.status = response.status;
+    error.errors = (body && body.errors) || null;
     throw error;
   }
 
@@ -75,4 +77,16 @@ export function post(path, data) {
   return request(path, { method: 'POST', body: JSON.stringify(data) });
 }
 
-export default { request, get, post };
+/**
+ * Send a PATCH request with a JSON payload to the backend API.
+ * @param {string} path API path, e.g. '/users/me/profile'.
+ * @param {object} data Payload to serialise as the JSON body.
+ * @returns {Promise<object>} The parsed JSON response body.
+ */
+export function patch(path, data) {
+  return request(path, { method: 'PATCH', body: JSON.stringify(data) });
+}
+
+export default {
+  request, get, post, patch,
+};

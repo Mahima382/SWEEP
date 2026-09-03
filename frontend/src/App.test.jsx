@@ -15,8 +15,9 @@ describe('SWEEP app shell', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: /SWEEP — Smart Waste Exchange & Eco Platform/i }),
+      screen.getByRole('heading', { name: /turning waste into value/i }),
     ).toBeInTheDocument();
     expect(screen.getByText('SWEEP')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /log in to sweep/i })).toBeInTheDocument();
   });
 });

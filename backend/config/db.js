@@ -37,5 +37,17 @@ if (!existingColumns.has('failed_attempts')) {
 if (!existingColumns.has('locked_until')) {
   db.exec('ALTER TABLE users ADD COLUMN locked_until TEXT');
 }
+if (!existingColumns.has('profile_completed')) {
+  db.exec('ALTER TABLE users ADD COLUMN profile_completed INTEGER NOT NULL DEFAULT 0');
+}
+if (!existingColumns.has('profile_data')) {
+  db.exec('ALTER TABLE users ADD COLUMN profile_data TEXT');
+}
+if (!existingColumns.has('reset_token')) {
+  db.exec('ALTER TABLE users ADD COLUMN reset_token TEXT');
+}
+if (!existingColumns.has('reset_token_expires')) {
+  db.exec('ALTER TABLE users ADD COLUMN reset_token_expires TEXT');
+}
 
 module.exports = db;

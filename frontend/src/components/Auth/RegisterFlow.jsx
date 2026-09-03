@@ -167,7 +167,7 @@ export default function RegisterFlow({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 32, height: 32, borderRadius: 9, background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
+              width: 32, height: 32, borderRadius: 9, background: '#a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
             }}
             >
               ♻️

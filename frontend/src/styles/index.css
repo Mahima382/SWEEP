@@ -44,10 +44,6 @@ a {
   letter-spacing: 0.05em;
 }
 
-.layout-nav a {
-  margin-left: 1rem;
-}
-
 .layout-main {
   flex: 1;
   padding: 1.5rem;

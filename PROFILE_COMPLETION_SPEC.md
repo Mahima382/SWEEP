@@ -1,8 +1,17 @@
 # SWEEP — Post-Login Profile Completion Spec
 
-> **Status:** Not implemented. This is a field checklist for the profile
-> completion flow that runs after login, once basic registration (FR-01) is
-> in place. Nothing below is built yet — implement it as a separate task.
+> **Status:** Implemented (2026-09-03, uncommitted on `login/Disha`). The
+> wizard lives at `frontend/src/pages/CompleteProfile.jsx` (route
+> `/complete-profile`), backed by `PATCH /api/users/me/profile`
+> (`backend/controllers/userController.js`). Login now sends a user with
+> `profileCompleted: false` here instead of straight to their dashboard.
+> Two intentional deferrals from the checklist below: the map pin (lat/lng)
+> is NOT collected — removed entirely (2026-09-03) rather than left as a
+> placeholder, since there is no Google Maps API key/dependency in this
+> project; the address is still collected without coordinates. File uploads
+> capture a filename only (no server-side file storage exists in this
+> project yet). Subscription plan selection is NOT collected here — per the
+> note on that row below, it happens after KYC approval as its own FR-07 flow.
 
 ## Why this split exists
 
@@ -43,7 +52,6 @@ No KYC required (locked decision).
 | Area | Yes | |
 | Postal Code | No | |
 | Detailed Address | Yes | Textarea — house/flat, road, block |
-| Map pin (lat/lng) | Yes | Exact pickup location, Google Maps |
 | Payout method | No at profile-completion time, required before first withdrawal (FR-04) | bKash / Nagad / Bank |
 | Payout account number | Conditional | Required once a payout method is chosen |
 | Bank name + branch | Conditional | Only when payout method is Bank |
@@ -61,7 +69,6 @@ KYC required — account stays pending until an admin approves it.
 | Date of Birth | Yes | |
 | Gender | No | |
 | Service address | Yes | Same shape as household address above |
-| Map pin (lat/lng) | Yes | Base of operations |
 | Daily Pickup Capacity | Yes | e.g. "12 pickups/day" |
 | Vehicle Type | No | Select |
 | Vehicle Registration Number | No | |

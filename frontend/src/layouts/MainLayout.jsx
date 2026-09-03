@@ -3,7 +3,10 @@ import { Link, Outlet } from 'react-router-dom';
 
 /**
  * Shared page chrome: header with the SWEEP brand, routed content, footer.
- * All routes in AppRoutes.jsx render inside the <Outlet />.
+ * Used by every route except the landing page (Home), which controls its
+ * own full-bleed hero instead — see AppRoutes.jsx. No nav links here: with
+ * login now reachable straight from the landing page, a persistent
+ * Login/Register nav was redundant on every other page too.
  * @returns {JSX.Element} The main layout shell.
  */
 function MainLayout() {
@@ -11,10 +14,6 @@ function MainLayout() {
     <div className="layout">
       <header className="layout-header">
         <Link to="/" className="brand">SWEEP</Link>
-        <nav className="layout-nav">
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </nav>
       </header>
       <main className="layout-main">
         <Outlet />

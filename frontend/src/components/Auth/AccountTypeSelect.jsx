@@ -74,7 +74,7 @@ export default function AccountTypeSelect({ onSelect, onBack }) {
       }}
       >
         <div style={{
-          width: 36, height: 36, borderRadius: 10, background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 36, height: 36, borderRadius: 10, background: '#a7f3d0', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
         >
           <span style={{ fontSize: 18 }}>♻️</span>

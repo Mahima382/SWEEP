@@ -17,6 +17,17 @@ async function findByEmail(email) {
 }
 
 /**
+ * Finds a user by id.
+ *
+ * @param {number} id - The user's id.
+ * @returns {Promise<object|null>} The user row, or null if not found.
+ */
+async function findById(id) {
+  const row = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+  return row || null;
+}
+
+/**
  * Creates a new user row.
  *
  * @param {object} user - User fields.
@@ -74,6 +85,111 @@ async function clearFailedLogins(id) {
   db.prepare('UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE id = ?').run(id);
 }
 
+/**
+ * Saves the post-login profile-completion data for a user (see
+ * PROFILE_COMPLETION_SPEC.md) and marks their profile as completed.
+ * Stored as a single JSON blob: the field set varies too widely by role
+ * (household address vs. company KYC documents vs. driving licences) to
+ * justify a wide, mostly-null column set in SQLite.
+ *
+ * @param {number} id - The user's id.
+ * @param {object} profileData - Role-specific profile fields, already
+ *   validated by utils/validators.js#validateProfileData.
+ * @returns {Promise<void>}
+ */
+async function completeProfile(id, profileData) {
+  db.prepare('UPDATE users SET profile_completed = 1, profile_data = ? WHERE id = ?')
+    .run(JSON.stringify(profileData), id);
+}
+
+/**
+ * Sets a password-reset token and its expiry on a user (FR-12 password
+ * reset). Overwrites any previous token — only the most recently requested
+ * link is valid.
+ *
+ * @param {number} id - The user's id.
+ * @param {string} token - The generated reset token.
+ * @param {string} expiresAt - ISO timestamp after which the token is invalid.
+ * @returns {Promise<void>}
+ */
+async function setResetToken(id, token, expiresAt) {
+  db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?')
+    .run(token, expiresAt, id);
+}
+
+/**
+ * Finds a user by an in-date password-reset token. A token that exists but
+ * has expired is treated the same as no match — the caller doesn't need to
+ * special-case expiry.
+ *
+ * @param {string} token - The reset token from the reset-password request.
+ * @returns {Promise<object|null>} The user row, or null if the token is
+ *   unknown or expired.
+ */
+async function findByResetToken(token) {
+  const row = db.prepare('SELECT * FROM users WHERE reset_token = ?').get(token);
+  if (!row || !row.reset_token_expires) {
+    return null;
+  }
+  return new Date(row.reset_token_expires) > new Date() ? row : null;
+}
+
+/**
+ * Sets a new password hash for a user and consumes their reset token, so it
+ * cannot be replayed. Also clears any login lockout — a successful reset is
+ * a legitimate way out of a lockout (FR-02, FR-12).
+ *
+ * @param {number} id - The user's id.
+ * @param {string} passwordHash - The new bcrypt password hash.
+ * @returns {Promise<void>}
+ */
+async function resetPassword(id, passwordHash) {
+  db.prepare(`
+    UPDATE users
+    SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL,
+        failed_attempts = 0, locked_until = NULL
+    WHERE id = ?
+  `).run(passwordHash, id);
+}
+
+/**
+ * Shapes a raw user row into the object safe to send to the client: never
+ * includes the password hash, and parses the stored profile JSON back into
+ * an object.
+ *
+ * @param {object} row - Raw row from the users table.
+ * @returns {object} Public user representation.
+ */
+function toPublicUser(row) {
+  let profileData = null;
+  try {
+    profileData = row.profile_data ? JSON.parse(row.profile_data) : null;
+  } catch (err) {
+    profileData = null;
+  }
+
+  return {
+    id: row.id,
+    role: row.role,
+    fullName: row.full_name,
+    email: row.email,
+    mobile: row.mobile,
+    status: row.status,
+    profileCompleted: !!row.profile_completed,
+    profileData,
+  };
+}
+
 module.exports = {
-  findByEmail, create, registerFailedLogin, clearFailedLogins, LOCKOUT_THRESHOLD,
+  findByEmail,
+  findById,
+  create,
+  registerFailedLogin,
+  clearFailedLogins,
+  completeProfile,
+  setResetToken,
+  findByResetToken,
+  resetPassword,
+  toPublicUser,
+  LOCKOUT_THRESHOLD,
 };

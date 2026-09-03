@@ -114,3 +114,116 @@ describe('userModel.clearFailedLogins', () => {
     expect(row.locked_until).toBeNull();
   });
 });
+
+describe('userModel.findById', () => {
+  it('returns null when no user matches', async () => {
+    expect(await userModel.findById(999)).toBeNull();
+  });
+
+  it('returns the matching row when a user exists', async () => {
+    const id = await userModel.create(baseUser);
+    const result = await userModel.findById(id);
+
+    expect(result).toMatchObject({ id, email: 'farhan@example.com' });
+  });
+});
+
+describe('userModel.completeProfile', () => {
+  it('stores the profile data as JSON and marks the profile completed', async () => {
+    const id = await userModel.create(baseUser);
+    await userModel.completeProfile(id, { nid: '1234567890' });
+
+    const row = await userModel.findById(id);
+    expect(row.profile_completed).toBe(1);
+    expect(JSON.parse(row.profile_data)).toEqual({ nid: '1234567890' });
+  });
+});
+
+describe('userModel.toPublicUser', () => {
+  it('never exposes the password hash and parses stored profile JSON', async () => {
+    const id = await userModel.create(baseUser);
+    await userModel.completeProfile(id, { nid: '1234567890' });
+    const row = await userModel.findById(id);
+
+    const publicUser = userModel.toPublicUser(row);
+
+    expect(publicUser).not.toHaveProperty('password_hash');
+    expect(publicUser).not.toHaveProperty('passwordHash');
+    expect(publicUser.profileCompleted).toBe(true);
+    expect(publicUser.profileData).toEqual({ nid: '1234567890' });
+  });
+
+  it('reports profileCompleted false and null profileData before completion', async () => {
+    const id = await userModel.create(baseUser);
+    const row = await userModel.findById(id);
+
+    const publicUser = userModel.toPublicUser(row);
+
+    expect(publicUser.profileCompleted).toBe(false);
+    expect(publicUser.profileData).toBeNull();
+  });
+});
+
+describe('userModel.setResetToken / findByResetToken', () => {
+  it('finds the user by an in-date token', async () => {
+    const id = await userModel.create(baseUser);
+    const expiresAt = new Date(Date.now() + 60000).toISOString();
+    await userModel.setResetToken(id, 'a-token', expiresAt);
+
+    const found = await userModel.findByResetToken('a-token');
+
+    expect(found).toMatchObject({ id, email: 'farhan@example.com' });
+  });
+
+  it('returns null for an unknown token', async () => {
+    expect(await userModel.findByResetToken('nope')).toBeNull();
+  });
+
+  it('returns null for an expired token', async () => {
+    const id = await userModel.create(baseUser);
+    const expiresAt = new Date(Date.now() - 60000).toISOString();
+    await userModel.setResetToken(id, 'a-token', expiresAt);
+
+    expect(await userModel.findByResetToken('a-token')).toBeNull();
+  });
+
+  it('overwrites a previous token when requested again', async () => {
+    const id = await userModel.create(baseUser);
+    const expiresAt = new Date(Date.now() + 60000).toISOString();
+    await userModel.setResetToken(id, 'first-token', expiresAt);
+    await userModel.setResetToken(id, 'second-token', expiresAt);
+
+    expect(await userModel.findByResetToken('first-token')).toBeNull();
+    expect(await userModel.findByResetToken('second-token')).not.toBeNull();
+  });
+});
+
+describe('userModel.resetPassword', () => {
+  it('updates the password hash and consumes the reset token', async () => {
+    const id = await userModel.create(baseUser);
+    const expiresAt = new Date(Date.now() + 60000).toISOString();
+    await userModel.setResetToken(id, 'a-token', expiresAt);
+
+    await userModel.resetPassword(id, 'new-hashed-password');
+
+    const row = await userModel.findById(id);
+    expect(row.password_hash).toBe('new-hashed-password');
+    expect(row.reset_token).toBeNull();
+    expect(row.reset_token_expires).toBeNull();
+    expect(await userModel.findByResetToken('a-token')).toBeNull();
+  });
+
+  it('clears any login lockout', async () => {
+    const id = await userModel.create(baseUser);
+    for (let i = 0; i < userModel.LOCKOUT_THRESHOLD; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await userModel.registerFailedLogin(id);
+    }
+
+    await userModel.resetPassword(id, 'new-hashed-password');
+
+    const row = await userModel.findById(id);
+    expect(row.failed_attempts).toBe(0);
+    expect(row.locked_until).toBeNull();
+  });
+});

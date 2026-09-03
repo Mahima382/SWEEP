@@ -15,5 +15,9 @@ CREATE TABLE IF NOT EXISTS users (
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'pending_kyc', 'suspended', 'banned')),
   failed_attempts INTEGER NOT NULL DEFAULT 0,
   locked_until TEXT,
+  profile_completed INTEGER NOT NULL DEFAULT 0,
+  profile_data TEXT,
+  reset_token TEXT,
+  reset_token_expires TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

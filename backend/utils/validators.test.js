@@ -3,7 +3,7 @@
  * Pure functions — no Express, no database.
  */
 const {
-  isValidEmail, isValidPassword, isValidMobile, isValidRole, ACCOUNT_TYPES,
+  isValidEmail, isValidPassword, isValidMobile, isValidRole, validateProfileData, ACCOUNT_TYPES,
 } = require('./validators');
 
 describe('isValidEmail', () => {
@@ -79,5 +79,156 @@ describe('isValidRole', () => {
 
   it('rejects an unknown role', () => {
     expect(isValidRole('superuser')).toBe(false);
+  });
+});
+
+const validAddress = {
+  division: 'Dhaka',
+  district: 'Dhaka',
+  city: 'Dhaka City Corporation',
+  area: 'Mirpur-10',
+  detailedAddress: 'House 12, Road 3',
+};
+
+describe('validateProfileData for household', () => {
+  it('accepts a complete household profile with no payout', () => {
+    const errors = validateProfileData('household', { nid: '1234567890', address: validAddress });
+    expect(errors).toEqual({});
+  });
+
+  it('requires the NID number', () => {
+    const errors = validateProfileData('household', { address: validAddress });
+    expect(errors.nid).toBeDefined();
+  });
+
+  it('requires payout account details once a payout method is chosen', () => {
+    const errors = validateProfileData('household', {
+      nid: '1234567890', address: validAddress, payout: { method: 'bkash' },
+    });
+    expect(errors['payout.accountNumber']).toBeDefined();
+  });
+
+  it('accepts a fully specified bank payout', () => {
+    const errors = validateProfileData('household', {
+      nid: '1234567890',
+      address: validAddress,
+      payout: {
+        method: 'bank', accountNumber: '123', bankName: 'City Bank',
+      },
+    });
+    expect(errors).toEqual({});
+  });
+});
+
+describe('validateProfileData for local collector', () => {
+  const validCollector = {
+    nid: '1234567890',
+    documents: { nidFront: 'front.jpg', nidBack: 'back.jpg', profilePhoto: 'photo.jpg' },
+    dob: '1995-01-01',
+    address: validAddress,
+    dailyCapacity: '12 pickups/day',
+    serviceZones: ['Mirpur-10'],
+  };
+
+  it('accepts a complete local collector profile', () => {
+    expect(validateProfileData('collector', validCollector)).toEqual({});
+  });
+
+  it('requires at least one service zone', () => {
+    const errors = validateProfileData('collector', { ...validCollector, serviceZones: [] });
+    expect(errors.serviceZones).toBeDefined();
+  });
+
+  it('requires KYC documents', () => {
+    const errors = validateProfileData('collector', { ...validCollector, documents: {} });
+    expect(errors['documents.nidFront']).toBeDefined();
+    expect(errors['documents.nidBack']).toBeDefined();
+    expect(errors['documents.profilePhoto']).toBeDefined();
+  });
+});
+
+describe('validateProfileData for global collector', () => {
+  const validGlobal = {
+    nid: '1234567890',
+    documents: {
+      nidFront: 'front.jpg',
+      nidBack: 'back.jpg',
+      profilePhoto: 'photo.jpg',
+      drivingLicence: 'dl.jpg',
+      vehicleRegistration: 'reg.jpg',
+    },
+    drivingLicenceNumber: 'DL-1',
+    vehicleRegistrationNumber: 'Dhaka Metro Ga-1234',
+    vehicleCapacity: '5 tons',
+  };
+
+  it('accepts a complete global collector profile', () => {
+    expect(validateProfileData('global', validGlobal)).toEqual({});
+  });
+
+  it('requires the driving licence document', () => {
+    const errors = validateProfileData('global', {
+      ...validGlobal, documents: { ...validGlobal.documents, drivingLicence: '' },
+    });
+    expect(errors['documents.drivingLicence']).toBeDefined();
+  });
+});
+
+describe('validateProfileData for company', () => {
+  const validCompany = {
+    registrationNumber: 'C-1',
+    officeAddress: 'Dhaka',
+    supportedCategories: ['Plastic', 'Paper'],
+    documents: {
+      tradeLicence: 'a.pdf',
+      companyRegistration: 'b.pdf',
+      tin: 'c.pdf',
+      vat: 'd.pdf',
+      directorNid: 'e.pdf',
+    },
+    authorizedPerson: {
+      name: 'Rahim Uddin', role: 'Managing Director', phone: '01712345678', email: 'rahim@example.com', nid: '999',
+    },
+  };
+
+  it('accepts a complete company profile without E-waste', () => {
+    expect(validateProfileData('company', validCompany)).toEqual({});
+  });
+
+  it('requires at least one supported category', () => {
+    const errors = validateProfileData('company', { ...validCompany, supportedCategories: [] });
+    expect(errors.supportedCategories).toBeDefined();
+  });
+
+  it('requires an E-waste licence when E-waste is selected', () => {
+    const errors = validateProfileData('company', {
+      ...validCompany, supportedCategories: ['E-waste'],
+    });
+    expect(errors.ewasteLicenceNumber).toBeDefined();
+    expect(errors['documents.ewasteLicence']).toBeDefined();
+  });
+
+  it('accepts E-waste when the licence is provided', () => {
+    const errors = validateProfileData('company', {
+      ...validCompany,
+      supportedCategories: ['E-waste'],
+      ewasteLicenceNumber: 'EW-1',
+      documents: { ...validCompany.documents, ewasteLicence: 'ew.pdf' },
+    });
+    expect(errors).toEqual({});
+  });
+
+  it('validates the authorized person email', () => {
+    const errors = validateProfileData('company', {
+      ...validCompany, authorizedPerson: { ...validCompany.authorizedPerson, email: 'not-an-email' },
+    });
+    expect(errors['authorizedPerson.email']).toBeDefined();
+  });
+});
+
+describe('validateProfileData for an unknown role', () => {
+  it('returns an error instead of throwing', () => {
+    const errors = validateProfileData('superuser', {});
+    expect(errors.role).toBeDefined();
   });
 });

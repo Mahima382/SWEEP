@@ -32,4 +32,29 @@ export const ROLES = {
   ADMIN: 'admin',
 };
 
-export default { WASTE_CATEGORIES, ROLES };
+/**
+ * Where each role lands after login/profile completion (FR-02 role-based
+ * routing). Keyed by the role values actually used across auth (household |
+ * collector | global | company | admin), not the ROLES constant above.
+ * @type {{household: string, collector: string, global: string,
+ *   company: string, admin: string}}
+ */
+export const ROLE_DASHBOARD_ROUTES = {
+  household: '/household',
+  collector: '/collector',
+  global: '/collector',
+  company: '/company',
+  admin: '/admin',
+};
+
+/**
+ * Roles whose account stays pending until an admin approves KYC (locked
+ * registration rules, CLAUDE.md §5) — mirrors
+ * backend/controllers/authController.js#KYC_PENDING_ROLES.
+ * @type {string[]}
+ */
+export const KYC_PENDING_ROLES = ['collector', 'global', 'company'];
+
+export default {
+  WASTE_CATEGORIES, ROLES, ROLE_DASHBOARD_ROUTES, KYC_PENDING_ROLES,
+};
