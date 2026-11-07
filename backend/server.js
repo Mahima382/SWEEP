@@ -6,8 +6,11 @@ const app = express();
 app.use(express.json());
 
 
+//mounting userRoutes to the app
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/admin', userRoutes); //connection with router, prefixing all routes with /api/admin
+
+
 
 
 app.listen(process.env.PORT, () => {
