@@ -10,6 +10,10 @@ app.use(express.json());
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/admin', userRoutes); //connection with router, prefixing all routes with /api/admin
 
+//mounting kycRoutes to the app
+const kycRoutes = require('./routes/kycRoutes');
+app.use('/api/admin', kycRoutes); //connection with router, prefixing all routes with /api/admin
+
 
 
 

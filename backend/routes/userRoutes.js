@@ -11,7 +11,7 @@ router.patch('/users/:id/ban', async (req, res) => {
 */
 
 //modify(patch) an existing user status from active to banned
-router.patch('/users/:id/ban', userControlller.banUser); // req, res is passed automatically
+router.patch('/users/:id/ban', userController.banUser); // req, res is passed automatically
 
 //modify(patch) an existing user status from active to suspended
 router.patch('/users/:id/suspend', userController.suspendUser); // req, res is passed automatically

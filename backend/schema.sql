@@ -55,7 +55,9 @@ CREATE TABLE IF NOT EXISTS user_admin_actions (
     action ENUM(
         'suspend',
         'ban',
-        'reinstate'
+        'reinstate',
+        'kyc_approve',
+        'kyc_reject'
     ) NOT NULL,
 
     reason TEXT NULL,
@@ -67,4 +69,51 @@ CREATE TABLE IF NOT EXISTS user_admin_actions (
 
     FOREIGN KEY (admin_id)
         REFERENCES users(id)
+);
+
+-- kyc submissions table (application and review information)
+
+CREATE TABLE IF NOT EXISTS kyc_submissions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+
+    user_id INT NOT NULL,
+
+    status ENUM(
+        'pending',
+        'approved',
+        'rejected'
+    ) NOT NULL DEFAULT 'pending',
+
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    reviewed_by INT NULL,
+
+    reviewed_at TIMESTAMP NULL,
+
+    decision_reason TEXT NULL,
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    FOREIGN KEY (reviewed_by)
+        REFERENCES users(id)
+);
+
+-- kyc documents table (uploaded document information)
+
+CREATE TABLE IF NOT EXISTS kyc_documents (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+
+    submission_id INT NOT NULL,
+
+    document_type VARCHAR(50) NOT NULL,
+
+    file_path VARCHAR(500) NOT NULL,
+
+    original_filename VARCHAR(255) NOT NULL,
+
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (submission_id)
+        REFERENCES kyc_submissions(id)
 );
