@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNotifications } from '../../../hooks/useNotifications';
 import NotificationList from './NotificationList';
 
@@ -11,28 +12,54 @@ export default function NotificationBell({ onAction, onViewAll }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <div style={{ position: 'relative', display: 'inline-block' }}>
       <button
         type="button"
         aria-label="Notifications"
-        className="relative p-2 rounded-full hover:bg-gray-100"
+        style={{
+          position: 'relative',
+          padding: '8px 12px',
+          borderRadius: '50px',
+          border: '1px solid #d1d5db',
+          backgroundColor: '#ffffff',
+          cursor: 'pointer',
+          fontSize: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
         onClick={() => setOpen((o) => !o)}
       >
-        🔔
+        <span role="img" aria-label="bell">🔔</span>
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] leading-none rounded-full px-1.5 py-1">
+          <span
+            style={{
+              backgroundColor: '#dc2626',
+              color: '#ffffff',
+              fontSize: '11px',
+              fontWeight: 700,
+              borderRadius: '9999px',
+              padding: '2px 6px',
+              lineHeight: 1,
+            }}
+          >
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 z-50">
+        <div style={{
+          position: 'absolute', right: 0, marginTop: '8px', zIndex: 1000,
+        }}
+        >
           <NotificationList
             onAction={onAction}
             onViewAll={() => {
               setOpen(false);
-              onViewAll?.();
+              if (onViewAll) {
+                onViewAll();
+              }
             }}
           />
         </div>
@@ -40,3 +67,13 @@ export default function NotificationBell({ onAction, onViewAll }) {
     </div>
   );
 }
+
+NotificationBell.propTypes = {
+  onAction: PropTypes.func,
+  onViewAll: PropTypes.func,
+};
+
+NotificationBell.defaultProps = {
+  onAction: null,
+  onViewAll: null,
+};

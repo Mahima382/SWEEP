@@ -17,7 +17,7 @@ import {
   markAllNotificationsAsRead,
 } from '../services/notificationService';
 
-const NotificationContext =
+export const NotificationContext =
   createContext(null);
 
 const SOCKET_URL =
@@ -38,11 +38,15 @@ export function NotificationProvider({
     async () => {
       if (!userId) return;
 
-      const response =
-        await getNotifications();
+      try {
+        const response =
+          await getNotifications();
 
-      setNotifications(response.data || []);
-      setUnreadCount(response.unreadCount || 0);
+        setNotifications(response.data || []);
+        setUnreadCount(response.unreadCount || 0);
+      } catch (err) {
+        // Keep current state when backend is offline
+      }
     },
     [userId]
   );
@@ -51,6 +55,15 @@ export function NotificationProvider({
     if (!userId) return;
 
     loadNotifications();
+
+    const handleLocalDemo = (e) => {
+      if (e.detail) {
+        setNotifications((current) => [e.detail, ...current]);
+        setUnreadCount((current) => current + 1);
+      }
+    };
+
+    window.addEventListener('sweep:demo-notification', handleLocalDemo);
 
     const socket = io(SOCKET_URL, {
       withCredentials: true,
@@ -80,10 +93,11 @@ export function NotificationProvider({
       ({ notificationId }) => {
         setNotifications((current) =>
           current.map((notification) =>
-            notification.id === notificationId
+            (notification.id === notificationId || notification._id === notificationId)
               ? {
                   ...notification,
                   is_read: true,
+                  isRead: true,
                 }
               : notification
           )
@@ -102,6 +116,7 @@ export function NotificationProvider({
           current.map((notification) => ({
             ...notification,
             is_read: true,
+            isRead: true,
           }))
         );
 
@@ -110,22 +125,28 @@ export function NotificationProvider({
     );
 
     return () => {
+      window.removeEventListener('sweep:demo-notification', handleLocalDemo);
       socket.disconnect();
     };
   }, [userId, loadNotifications]);
 
   const markAsRead = useCallback(
     async (notificationId) => {
-      await markNotificationAsRead(
-        notificationId
-      );
+      try {
+        await markNotificationAsRead(
+          notificationId
+        );
+      } catch (err) {
+        // Fallback for offline demo mode
+      }
 
       setNotifications((current) =>
         current.map((notification) =>
-          notification.id === notificationId
+          (notification.id === notificationId || notification._id === notificationId)
             ? {
                 ...notification,
                 is_read: true,
+                isRead: true,
               }
             : notification
         )
@@ -140,12 +161,17 @@ export function NotificationProvider({
 
   const markAllAsRead = useCallback(
     async () => {
-      await markAllNotificationsAsRead();
+      try {
+        await markAllNotificationsAsRead();
+      } catch (err) {
+        // Fallback for offline demo mode
+      }
 
       setNotifications((current) =>
         current.map((notification) => ({
           ...notification,
           is_read: true,
+          isRead: true,
         }))
       );
 

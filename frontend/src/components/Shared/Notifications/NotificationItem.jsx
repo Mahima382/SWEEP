@@ -1,3 +1,5 @@
+import React from 'react';
+import PropTypes from 'prop-types';
 import { CATEGORY_META, PRIORITY_META } from '../../../utils/notificationMeta';
 
 /**
@@ -8,41 +10,90 @@ import { CATEGORY_META, PRIORITY_META } from '../../../utils/notificationMeta';
  * Company, Admin).
  */
 export default function NotificationItem({ notification, onMarkRead, onAction }) {
-  const category = CATEGORY_META[notification.category] || CATEGORY_META.SYSTEM;
-  const priority = PRIORITY_META[notification.priority] || PRIORITY_META.NORMAL;
+  const notificationId = notification.id || notification._id;
+  const isRead = Boolean(notification.isRead || notification.is_read);
+  const typeKey = (notification.category || notification.type || 'SYSTEM').toUpperCase();
+  const priorityKey = (notification.priority || 'NORMAL').toUpperCase();
+
+  const category = CATEGORY_META[typeKey] || CATEGORY_META.SYSTEM;
+  const priority = PRIORITY_META[priorityKey] || PRIORITY_META.NORMAL;
+  const message = notification.message || notification.body;
+  const dateStr = new Date(notification.created_at || notification.createdAt || Date.now()).toLocaleTimeString();
 
   return (
     <div
-      className={`flex gap-3 p-3 border-b last:border-b-0 cursor-pointer ${
-        notification.isRead ? 'bg-white' : 'bg-blue-50'
-      }`}
-      onClick={() => !notification.isRead && onMarkRead(notification._id)}
+      role="button"
+      tabIndex={0}
+      className={`notification-item ${isRead ? 'is-read' : 'is-unread'}`}
+      style={{
+        display: 'flex',
+        gap: '10px',
+        padding: '10px 12px',
+        borderBottom: '1px solid #e5e7eb',
+        backgroundColor: isRead ? '#ffffff' : '#f0fdf4',
+        cursor: 'pointer',
+      }}
+      onClick={() => {
+        if (!isRead && onMarkRead) {
+          onMarkRead(notificationId);
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && !isRead && onMarkRead) {
+          onMarkRead(notificationId);
+        }
+      }}
     >
       <span
-        className="w-2 h-2 mt-2 rounded-full flex-shrink-0"
-        style={{ backgroundColor: priority.color }}
+        style={{
+          width: '8px',
+          height: '8px',
+          marginTop: '6px',
+          borderRadius: '50%',
+          backgroundColor: priority.color,
+          flexShrink: 0,
+        }}
         title={priority.label}
       />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: category.color }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span
+            style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              color: category.color,
+            }}
+          >
             {category.label}
           </span>
-          <span className="text-xs text-gray-400">{new Date(notification.createdAt).toLocaleString()}</span>
+          <span style={{ fontSize: '11px', color: '#9ca3af' }}>{dateStr}</span>
         </div>
-        <p className="text-sm font-semibold text-gray-900 mt-0.5">{notification.title}</p>
-        <p className="text-sm text-gray-600">{notification.body}</p>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: '#111827', marginTop: '2px' }}>
+          {notification.title}
+        </div>
+        <div style={{ fontSize: '12px', color: '#4b5563', marginTop: '2px' }}>{message}</div>
 
-        {notification.actions?.length > 0 && (
-          <div className="flex gap-2 mt-2">
+        {notification.actions && notification.actions.length > 0 && (
+          <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
             {notification.actions.map((action) => (
               <button
                 key={action.action}
                 type="button"
-                className="text-xs font-medium px-3 py-1 rounded border border-gray-300 hover:bg-gray-100"
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #d1d5db',
+                  backgroundColor: '#ffffff',
+                  cursor: 'pointer',
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAction?.(action, notification);
+                  if (onAction) {
+                    onAction(action, notification);
+                  }
                 }}
               >
                 {action.label}
@@ -54,3 +105,28 @@ export default function NotificationItem({ notification, onMarkRead, onAction })
     </div>
   );
 }
+
+NotificationItem.propTypes = {
+  notification: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    _id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    title: PropTypes.string,
+    message: PropTypes.string,
+    body: PropTypes.string,
+    category: PropTypes.string,
+    type: PropTypes.string,
+    priority: PropTypes.string,
+    is_read: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    isRead: PropTypes.bool,
+    created_at: PropTypes.string,
+    createdAt: PropTypes.string,
+    actions: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  onMarkRead: PropTypes.func,
+  onAction: PropTypes.func,
+};
+
+NotificationItem.defaultProps = {
+  onMarkRead: null,
+  onAction: null,
+};

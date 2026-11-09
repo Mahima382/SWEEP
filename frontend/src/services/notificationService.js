@@ -33,8 +33,18 @@ export async function getNotifications({
   unreadOnly = false,
 } = {}) {
   return request(
-    `/notifications?limit=${limit}&offset=${offset}&unreadOnly=${unreadOnly}`
+    `/notifications?limit=${limit}&offset=${offset}&unreadOnly=${unreadOnly}`,
   );
+}
+
+export async function fetchNotifications({
+  page = 1,
+  limit = 20,
+  isRead,
+} = {}) {
+  const offset = (page - 1) * limit;
+  const unreadOnly = isRead === false;
+  return getNotifications({ limit, offset, unreadOnly });
 }
 
 export async function getUnreadCount() {

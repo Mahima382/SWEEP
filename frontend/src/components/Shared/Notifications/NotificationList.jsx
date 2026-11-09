@@ -1,39 +1,105 @@
+import React from 'react';
+import PropTypes from 'prop-types';
 import { useNotifications } from '../../../hooks/useNotifications';
 import NotificationItem from './NotificationItem';
 
 /**
- * Dropdown panel used by NotificationBell. For the full paginated inbox
- * see pages/NotificationsPage.jsx — this component only renders
- * whatever the context currently holds (the most recent page).
+ * Dropdown panel used by NotificationBell.
  */
 export default function NotificationList({ onAction, onViewAll }) {
-  const { notifications, loading, markAsRead, markAllAsRead } = useNotifications();
+  const {
+    notifications,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications();
 
   return (
-    <div className="w-80 max-h-96 overflow-y-auto bg-white rounded-lg shadow-lg border">
-      <div className="flex items-center justify-between p-3 border-b">
-        <span className="font-semibold text-sm">Notifications</span>
-        <button type="button" className="text-xs text-blue-600 hover:underline" onClick={markAllAsRead}>
+    <div
+      style={{
+        width: '320px',
+        maxHeight: '400px',
+        overflowY: 'auto',
+        backgroundColor: '#ffffff',
+        borderRadius: '8px',
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #e5e7eb',
+        zIndex: 1000,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '12px',
+          borderBottom: '1px solid #e5e7eb',
+          backgroundColor: '#f9fafb',
+        }}
+      >
+        <span style={{ fontSize: '13px', fontWeight: 700, color: '#111827' }}>
+          Notifications
+        </span>
+        <button
+          type="button"
+          style={{
+            fontSize: '11px',
+            color: '#16a34a',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 600,
+          }}
+          onClick={markAllAsRead}
+        >
           Mark all as read
         </button>
       </div>
 
-      {loading && <p className="p-4 text-sm text-gray-500">Loading…</p>}
-      {!loading && notifications.length === 0 && (
-        <p className="p-4 text-sm text-gray-500">You&apos;re all caught up.</p>
+      {notifications.length === 0 ? (
+        <p style={{ padding: '16px', fontSize: '13px', color: '#6b7280', margin: 0, textAlign: 'center' }}>
+          You&apos;re all caught up.
+        </p>
+      ) : (
+        notifications.map((n) => (
+          <NotificationItem
+            key={n.id || n._id}
+            notification={n}
+            onMarkRead={markAsRead}
+            onAction={onAction}
+          />
+        ))
       )}
 
-      {notifications.map((n) => (
-        <NotificationItem key={n._id} notification={n} onMarkRead={markAsRead} onAction={onAction} />
-      ))}
-
-      <button
-        type="button"
-        className="w-full p-2 text-xs text-center text-blue-600 hover:bg-gray-50 border-t"
-        onClick={onViewAll}
-      >
-        View all
-      </button>
+      {onViewAll && (
+        <button
+          type="button"
+          style={{
+            width: '100%',
+            padding: '10px',
+            fontSize: '12px',
+            color: '#16a34a',
+            backgroundColor: '#ffffff',
+            border: 'none',
+            borderTop: '1px solid #e5e7eb',
+            cursor: 'pointer',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
+          onClick={onViewAll}
+        >
+          View all notifications
+        </button>
+      )}
     </div>
   );
 }
+
+NotificationList.propTypes = {
+  onAction: PropTypes.func,
+  onViewAll: PropTypes.func,
+};
+
+NotificationList.defaultProps = {
+  onAction: null,
+  onViewAll: null,
+};
