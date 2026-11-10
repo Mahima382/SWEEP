@@ -32,12 +32,12 @@ column is someone else's — ask before touching it.
 
 | Member | Domain (FRs) | Backend owns | Frontend owns | Shared files they'll touch |
 |--------|--------------|--------------|---------------|----------------------------|
-| Zakia Sultana Mahima (382) | Auth & Security (FR-01, 02, 12) | `controllers/authController.js`, `routes/auth.routes.js`, `middleware/auth.js` | `pages/Login.jsx`, `pages/Register.jsx`, `context/AuthContext.jsx`, `services/authService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (users) |
-| Md. Safiur Khan Siam (356) | Household (FR-03, FR-04) | `controllers/wasteController.js`, `controllers/walletController.js`, `routes/waste.routes.js` | `components/Household/`, `services/wasteService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (listings, wallets) |
-| Yeaseen Arafat Hridit (361) | Collector (FR-05, 06, 09) | `controllers/notificationController.js`, `routes/notification.routes.js`, pickup logic (new `pickup.routes.js` when needed) | `components/Collector/`, `services/pickupService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (pickups) |
-| Abid Hasan Plabon (369) | Company (FR-07, FR-08) | `controllers/userController.js` company flows, new subscription controller/routes when needed | `components/Company/`, `services/companyService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (subscriptions, orders) |
-| Anabil Chakma (378) | Payments (FR-10) | `controllers/paymentController.js`, `services/` (gateway), `routes/payment.routes.js` | payment/wallet UI shared pieces, `services/paymentService.js` | `app.js`, `schema.sql` (transactions), root `package.json` |
-| Lamia Tabassum Disha (383) | Admin (FR-11) | `controllers/adminController.js`, `routes/admin.routes.js` | `components/Admin/`, `services/adminService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (audit logs) |
+| Zakia Sultana Mahima (382) | Notification (FR-09) & Payments (FR-10) | `controllers/authController.js`, `routes/auth.routes.js`, `middleware/auth.js` | `pages/Login.jsx`, `pages/Register.jsx`, `context/AuthContext.jsx`, `services/authService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (users) |
+| Md. Safiur Khan Siam (356) | Subscription mng(FR-07) & Company Dashboard(FR-08) | `controllers/wasteController.js`, `controllers/walletController.js`, `routes/waste.routes.js` | `components/Household/`, `services/wasteService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (listings, wallets) |
+| Yeaseen Arafat Hridit (361) | Account security(FR-12) & Admin portal(FR-11) | `controllers/notificationController.js`, `routes/notification.routes.js`, pickup logic (new `pickup.routes.js` when needed) | `components/Collector/`, `services/pickupService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (pickups) |
+| Abid Hasan Plabon (369) | Household waste listing(FR-03) & Househould wallet(FR-04) | `controllers/userController.js` company flows, new subscription controller/routes when needed | `components/Company/`, `services/companyService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (subscriptions, orders) |
+| Anabil Chakma (378) | Collector's dashboard(FR-05) & Collector's pickup mng(FR-06) | `controllers/paymentController.js`, `services/` (gateway), `routes/payment.routes.js` | payment/wallet UI shared pieces, `services/paymentService.js` | `app.js`, `schema.sql` (transactions), root `package.json` |
+| Lamia Tabassum Disha (383) | Login & Auth(FR-01, 02) | `controllers/adminController.js`, `routes/admin.routes.js` | `components/Admin/`, `services/adminService.js` | `app.js`, `AppRoutes.jsx`, `schema.sql` (audit logs) |
 
 Note: `walletController` belongs to Household (Siam); Anabil's payment code calls it via
 its exported functions — he does not edit that file.
